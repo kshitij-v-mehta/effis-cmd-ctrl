@@ -1,6 +1,6 @@
 import adios2
 from mpi4py import MPI
-import os
+import os, sys
 import effis.signals as effis_signals
 from effis.api import effis_init, effis_finalize, effis_signal
 

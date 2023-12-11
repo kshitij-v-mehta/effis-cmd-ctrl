@@ -1,5 +1,6 @@
 import subprocess
 from effis.server import launch_server_thread
+from queue import Queue
 
 
 _apps_running = []
@@ -8,7 +9,7 @@ _q = Queue()
 
 
 class _App:
-    def __init__(name, exe, input_args = (), nprocs, ppn, cpus_per_task, gpus_per_task, working_dir):
+    def __init__(self, name, exe, input_args, nprocs, ppn, cpus_per_task, gpus_per_task, working_dir):
         self.name = name
         self.exe = exe
         self.input_args = input_args
@@ -20,7 +21,7 @@ class _App:
 
 
 def form_slurm_cmd(app):
-    run_cmd = f"srun --exclusive -n {app.nprocs} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} {exe} {*app.input_args}"
+    run_cmd = f"srun --exclusive -n {app.nprocs} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} {app.exe}"
     return run_cmd.split()
 
 
@@ -34,12 +35,12 @@ def _launch(app):
 def _launch_apps():
     simulation = _App(name='Simulation', 
                       exe="/Users/kpu/vshare/effis-cmd-ctrl/apps/simulation.py", 
-                      input_args = (), nprocs=1, nprocs_per_node=1, cpus_per_task=1, gpus_per_task=None,
+                      input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
                       working_dir="/Users/kpu/vshare/effis-cmd-ctrl/test-dir")
 
     analysis   = _App(name='Analysis', 
                       exe="/Users/kpu/vshare/effis-cmd-ctrl/apps/anslysis.py", 
-                      input_args = (), nprocs=1, nprocs_per_node=1, cpus_per_task=1, gpus_per_task=None,
+                      input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
                       working_dir="/Users/kpu/vshare/effis-cmd-ctrl/test-dir")
 
     _apps_running.append(_launch(simulation))

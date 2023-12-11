@@ -1,3 +1,4 @@
+from multiprocessing.connection import Client
 import effis.signals as effis_signals
 
 

@@ -3,7 +3,6 @@ from threading import Thread
 import socket
 import effis.signals as signals
 
-
 _port = 6000
 
 
@@ -14,7 +13,7 @@ def server_thread(port, app_name, q):
 
     # Start listening for connections
     addr = (socket.gethostname(), port)
-    listener = Listener(address)
+    listener = Listener(addr)
     conn = listener.accept()
 
     # Recv ack from client that it is ready
