@@ -12,6 +12,7 @@ def cleanup(writer, checkpoint_engine):
 
 
 def checkpoint(adios2_writer, v, i, t):
+    logger.info("simulation main app performing checkpoint")
     adios2_writer.BeginStep()
     adios2_writer.Put(v, f"Checkpoint {i}, timestep {t}")
     adios2_writer.EndStep()
@@ -35,11 +36,10 @@ def init_adios_objects(ad2):
 
 def main():
     try:
-        assert len(sys.argv) == 2
-        app_name = f"{os.path.basename(sys.argv[0])}:{sys.argv[1]}"
+        app_name = f"{os.path.basename(sys.argv[0])}"
         rank = MPI.COMM_WORLD.Get_rank()
 
-        nt = 10
+        nt = 100
         icheckpoint = 0
         ad2 = adios2.ADIOS()
 
@@ -49,13 +49,13 @@ def main():
             writer, checkpoint_engine, v1, v2 = init_adios_objects(ad2)
             logger.info(f"{app_name} initialized adios. Now calling effis_init")
 
-            effis_init(os.path.basename(sys.argv[0]), checkpoint, cleanup)
+            effis_init(os.path.basename(sys.argv[0]), checkpoint, None)
 
             # Begin timestepping
             logger.info(f"{app_name} starting timestepping")
             for t in range(nt):
                 if rank == 0:
-                    logging.info(f"{app_name} starting timestep {t}")
+                    logger.info(f"{app_name} starting timestep {t}")
                 time.sleep(0.1)
                 writer.BeginStep()
                 writer.Put(v1, f"Timestep {t} from {app_name}, P{rank}")
@@ -66,8 +66,10 @@ def main():
                     checkpoint(checkpoint_engine, v2, icheckpoint, t)
 
                 logger.info(f"{app_name} calling effis_check")
-                effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
-                            cleanup_args = (writer, checkpoint_engine))
+                if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
+                                    cleanup_args = (writer, checkpoint_engine)):
+                    logger.info(f"{app_name} app received 1 from effis_check. Terminating loop")
+                    break
          
             logger.info(f"{app_name} calling cleanup")
             cleanup(writer, checkpoint_engine)

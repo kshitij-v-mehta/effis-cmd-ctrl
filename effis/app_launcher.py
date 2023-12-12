@@ -22,12 +22,12 @@ class _App:
 
 
 def form_slurm_cmd(app):
-    run_cmd = f"srun --exclusive -n {app.nprocs} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} {app.exe}"
+    run_cmd = f"srun --exclusive -n {app.nprocs} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} python3 {app.exe}"
     return run_cmd.split()
 
 
 def form_mpi_cmd(app):
-    run_cmd = f"mpirun -np {app.nprocs} {app.exe}"
+    run_cmd = f"mpirun -np {app.nprocs} python3 {app.exe}"
     return run_cmd.split()
 
 
@@ -43,13 +43,13 @@ def _launch(app):
 
 
 def _launch_apps():
-    simulation = _App(name='Simulation', 
+    simulation = _App(name='simulation.py', 
                       exe="/home/kmehta/vshare/effis-cmd-ctrl/apps/simulation.py", 
                       input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
                       working_dir="/home/kmehta/vshare/effis-cmd-ctrl/test-dir")
 
-    analysis   = _App(name='Analysis', 
-                      exe="/home/kmehta/vshare/effis-cmd-ctrl/apps/anslysis.py", 
+    analysis   = _App(name='analysis.py', 
+                      exe="/home/kmehta/vshare/effis-cmd-ctrl/apps/analysis.py", 
                       input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
                       working_dir="/home/kmehta/vshare/effis-cmd-ctrl/test-dir")
 

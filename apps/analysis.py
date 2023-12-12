@@ -27,10 +27,14 @@ def main():
         ad_var = io.InquireVariable("Str")
         v = engine.Get(ad_var)
 
+        logger.info(f"{app_name} read next step. Value: {v}")
+
         # Indicate error condition
-        if 'timestep 5' in v:
+        if 'Timestep 5' in v:
             logger.info(f"{app_name} detected condition. Sending signal")
             effis_signal(effis_signals.EFFIS_SIGTERM)
+            engine.EndStep()
+            break
 
         engine.EndStep()
     engine.Close()

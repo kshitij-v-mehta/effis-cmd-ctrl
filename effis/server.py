@@ -28,7 +28,7 @@ def server_thread(port, app_name, q):
 
     # Wait for a message
     msg = None
-    if app_name == "Analysis":
+    if 'analysis' in app_name:
         # receive message from analysis client and forward it to the application
         logger.info(f"{app_name} waiting for message from client thread.")
         msg = conn.recv()
@@ -39,6 +39,7 @@ def server_thread(port, app_name, q):
         # extract signal from the queue from the analysis server and forward it to the simulation client
         logger.info(f"{app_name} waiting for message from effis server.")
         msg = q.get()
+        q.task_done()
         
         logger.info(f"{app_name} received {msg} from effis server. Forwarding to app client thread.")
         conn.send(msg)

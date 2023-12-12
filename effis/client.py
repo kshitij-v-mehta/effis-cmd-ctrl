@@ -26,10 +26,11 @@ def effis_client(app_name, q):
     q.put(effis_signals.CLIENT_READY)
 
     # Now start monitoring for a signal
-    if app_name == 'Analysis':
+    if "analysis" in app_name:
         # Get signal from the application
         logger.info(f"{app_name} waiting for signal in queue.")
         signal = q.get()
+        q.task_done()
 
         # forward the signal to the effis server
         logger.info(f"{app_name} received {signal}. Forwarding to effis.")
