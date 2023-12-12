@@ -45,12 +45,12 @@ def _launch(app):
 def _launch_apps():
     simulation = _App(name='simulation.py', 
                       exe="/home/kmehta/vshare/effis-cmd-ctrl/apps/simulation.py", 
-                      input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
+                      input_args = (), nprocs=2, ppn=1, cpus_per_task=1, gpus_per_task=None,
                       working_dir="/home/kmehta/vshare/effis-cmd-ctrl/test-dir")
 
     analysis   = _App(name='analysis.py', 
                       exe="/home/kmehta/vshare/effis-cmd-ctrl/apps/analysis.py", 
-                      input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
+                      input_args = (), nprocs=2, ppn=1, cpus_per_task=1, gpus_per_task=None,
                       working_dir="/home/kmehta/vshare/effis-cmd-ctrl/test-dir")
 
     _apps_running.append(_launch(simulation))

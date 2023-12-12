@@ -1,4 +1,2 @@
 - analysis and simulation names are hard-coded
-- analysis must wait for response and not proceed to remaining steps
-- error may be detected by any process in the analysis code. that process needs to let the root know about the error condition.
 - cleanup is currently None. Passing it as not-none will crash the code.

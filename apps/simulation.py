@@ -28,8 +28,8 @@ def init_adios_objects(ad2):
     v1 = io.DefineVariable("Str")
     v2 = io_c.DefineVariable("Str")
     
-    writer            = io.Open   ("test.bp",       adios2.Mode.Write, MPI.COMM_SELF)
-    checkpoint_engine = io_c.Open ("checkpoint.bp", adios2.Mode.Write, MPI.COMM_SELF)
+    writer            = io.Open   ("test.bp",       adios2.Mode.Write, MPI.COMM_WORLD)
+    checkpoint_engine = io_c.Open ("checkpoint.bp", adios2.Mode.Write, MPI.COMM_WORLD)
 
     return writer, checkpoint_engine, v1, v2
 
@@ -43,41 +43,40 @@ def main():
         icheckpoint = 0
         ad2 = adios2.ADIOS()
 
-        # Just write a string value from the root for now
+        writer, checkpoint_engine, v1, v2 = init_adios_objects(ad2)
+
         if rank == 0:
-
-            writer, checkpoint_engine, v1, v2 = init_adios_objects(ad2)
             logger.info(f"{app_name} initialized adios. Now calling effis_init")
+        
+        effis_init(os.path.basename(sys.argv[0]), checkpoint, None)
 
-            effis_init(os.path.basename(sys.argv[0]), checkpoint, None)
+        # Begin timestepping
+        logger.info(f"{app_name} starting timestepping")
+        for t in range(nt):
+            if rank == 0:
+                logger.info(f"{app_name} starting timestep {t}")
+            time.sleep(0.1)
+            writer.BeginStep()
+            writer.Put(v1, f"Timestep {t} from {app_name}, P{rank}")
+            writer.EndStep()
 
-            # Begin timestepping
-            logger.info(f"{app_name} starting timestepping")
-            for t in range(nt):
-                if rank == 0:
-                    logger.info(f"{app_name} starting timestep {t}")
-                time.sleep(0.1)
-                writer.BeginStep()
-                writer.Put(v1, f"Timestep {t} from {app_name}, P{rank}")
-                writer.EndStep()
+            if t % 3 == 0 and t != 0:
+                icheckpoint += 1
+                checkpoint(checkpoint_engine, v2, icheckpoint, t)
 
-                if t % 3 == 0 and t != 0:
-                    icheckpoint += 1
-                    checkpoint(checkpoint_engine, v2, icheckpoint, t)
-
-                logger.info(f"{app_name} calling effis_check")
-                if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
-                                    cleanup_args = (writer, checkpoint_engine)):
-                    logger.info(f"{app_name} app received 1 from effis_check. Terminating loop")
-                    break
-         
-            logger.info(f"{app_name} calling cleanup")
-            cleanup(writer, checkpoint_engine)
-            
-            logger.info(f"{app_name} calling effis_finalize")
-            effis_finalize()
-            
-            logger.info(f"{app_name} done. Exiting.")
+            logger.info(f"{app_name} calling effis_check")
+            if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
+                                cleanup_args = (writer, checkpoint_engine)):
+                logger.info(f"{app_name} app received 1 from effis_check. Terminating loop")
+                break
+        
+        logger.info(f"{app_name} calling cleanup")
+        cleanup(writer, checkpoint_engine)
+        
+        logger.info(f"{app_name} calling effis_finalize")
+        effis_finalize()
+        
+        logger.info(f"{app_name} done. Exiting.")
 
     except Exception as e:
         print(e)

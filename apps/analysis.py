@@ -7,11 +7,8 @@ from utils.logger import logger
 
 
 def main():
-    # Only root
-    if MPI.COMM_WORLD.Get_rank() != 0:
-        return
-
     app_name = os.path.basename(sys.argv[0])
+    rank = MPI.COMM_WORLD.Get_rank()
 
     # Start effis socket thread
     logger.info(f"{app_name} calling effis_init")
@@ -20,7 +17,7 @@ def main():
     ad2 = adios2.ADIOS()
     io = ad2.DeclareIO("reader")
     io.SetEngine("BP5")
-    engine = io.Open("test.bp", adios2.Mode.Read)
+    engine = io.Open("test.bp", adios2.Mode.Read, MPI.COMM_WORLD)
     logger.info(f"{app_name} opened test.bp for reading")
     
     while(engine.BeginStep() == adios2.StepStatus.OK):
@@ -30,7 +27,12 @@ def main():
         logger.info(f"{app_name} read next step. Value: {v}")
 
         # Indicate error condition
-        if 'Timestep 5' in v:
+        retval = 0
+        if rank != 0:
+            if 'Timestep 5' in v:
+                retval = 1
+        check = MPI.COMM_WORLD.allreduce(retval)
+        if check > 0:
             logger.info(f"{app_name} detected condition. Sending signal")
             effis_signal(effis_signals.EFFIS_SIGTERM)
             engine.EndStep()
