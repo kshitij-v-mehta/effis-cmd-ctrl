@@ -1,6 +1,7 @@
 import subprocess
 from effis.server import launch_server_thread
 from queue import Queue
+from utils.logger import logger
 
 
 _apps_running = []
@@ -25,29 +26,39 @@ def form_slurm_cmd(app):
     return run_cmd.split()
 
 
+def form_mpi_cmd(app):
+    run_cmd = f"mpirun -np {app.nprocs} {app.exe}"
+    return run_cmd.split()
+
+
 def _launch(app):
+    logger.info(f"{app.name} launching server thread")
     _server_threads.append(launch_server_thread(app.name, _q))
-    run_cmd = form_slurm_cmd(app)
+    # run_cmd = form_slurm_cmd(app)
+    run_cmd = form_mpi_cmd(app)
+    
+    logger.info(f"{app.name} launching application as {run_cmd}")
     p = subprocess.Popen(run_cmd, cwd=app.working_dir)
     return p
 
 
 def _launch_apps():
     simulation = _App(name='Simulation', 
-                      exe="/Users/kpu/vshare/effis-cmd-ctrl/apps/simulation.py", 
+                      exe="/home/kmehta/vshare/effis-cmd-ctrl/apps/simulation.py", 
                       input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
-                      working_dir="/Users/kpu/vshare/effis-cmd-ctrl/test-dir")
+                      working_dir="/home/kmehta/vshare/effis-cmd-ctrl/test-dir")
 
     analysis   = _App(name='Analysis', 
-                      exe="/Users/kpu/vshare/effis-cmd-ctrl/apps/anslysis.py", 
+                      exe="/home/kmehta/vshare/effis-cmd-ctrl/apps/anslysis.py", 
                       input_args = (), nprocs=1, ppn=1, cpus_per_task=1, gpus_per_task=None,
-                      working_dir="/Users/kpu/vshare/effis-cmd-ctrl/test-dir")
+                      working_dir="/home/kmehta/vshare/effis-cmd-ctrl/test-dir")
 
     _apps_running.append(_launch(simulation))
     _apps_running.append(_launch(analysis))
     
 
 def _monitor_queue():
+    logger.info(f"Waiting for server threads to finish")
     for t in _server_threads:
         t.join()
 
