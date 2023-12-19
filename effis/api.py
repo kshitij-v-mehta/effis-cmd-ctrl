@@ -30,14 +30,7 @@ def effis_init(app_name, checkpoint_routine=None, cleanup_routine=None):
     _t = Thread(target=effis_client, args=(app_name, _q,))
     _t.start()
 
-    # Get a READY signal from the thread which indicates the thread was able to connect
-    # with the EFFIS server successfully
-    logger.info(f"{app_name} waiting for ready signal from client thread")
-    signal = _q.get()
-    _q.task_done()
-    assert signal == CLIENT_READY, f"Expected {CLIENT_READY}, received {signal} from app client f{app_name}"
-
-    logger.info(f"{app_name} received ready signal from client thread. Exiting effis_init.")
+    logger.info(f"{app_name} exiting effis_init.")
 
 
 def effis_check(checkpoint_args = (), cleanup_args = ()):

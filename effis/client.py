@@ -21,10 +21,6 @@ def effis_client(app_name, q):
     logger.info(f"{app_name} sending ready acknowledgement")
     conn.send(effis_signals.CLIENT_READY)
 
-    # Tell the application that I am ready
-    logger.info(f"{app_name} sending ready acknowledgement to application in shared queue")
-    q.put(effis_signals.CLIENT_READY)
-
     # Now start monitoring for a signal
     if "analysis" in app_name:
         # Get signal from the application
