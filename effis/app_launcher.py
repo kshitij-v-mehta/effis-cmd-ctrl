@@ -33,7 +33,10 @@ def form_mpi_cmd(app):
 
 def _launch(app):
     logger.info(f"{app.name} launching server thread")
-    _server_threads.append(launch_server_thread(app.name, _q))
+    thread_type = 'listener'
+    if 'analysis' in app.name:
+        thread_type = 'sender'
+    _server_threads.append(launch_server_thread(app.name, _q, thread_type))
     # run_cmd = form_slurm_cmd(app)
     run_cmd = form_mpi_cmd(app)
     

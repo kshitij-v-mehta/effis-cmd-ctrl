@@ -1,2 +1,2 @@
-- analysis and simulation names are hard-coded
+- Can we have a SIGTERM handler, so that we do not have to do a broadcast at every step
 - cleanup is currently None. Passing it as not-none will crash the code.
