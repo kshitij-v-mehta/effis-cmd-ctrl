@@ -36,7 +36,7 @@ def main():
                 retval = 1
         check = MPI.COMM_WORLD.allreduce(retval)
         if check > 0:
-            logger.info(f"{app_name} detected condition. Sending signal")
+            logger.warning(f"{app_name} detected condition. Sending signal")
             effis_signal(effis_signals.EFFIS_SIGTERM)
             engine.EndStep()
             break

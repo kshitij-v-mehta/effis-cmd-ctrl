@@ -2,7 +2,7 @@ import logging
 
 
 logger = logging.getLogger("effis-cmd-ctrl")
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s | %(asctime)s | %(filename)16s:%(funcName)32s():%(lineno)3s | %(message)s",
+logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(asctime)s | %(filename)16s:%(funcName)32s():%(lineno)3s | %(message)s",
                     datefmt="%Y-%m-%d %H:%M:%S")
 
 

@@ -17,39 +17,39 @@ def server_thread(port, app_name, q, thread_type):
     """
     # Write connection info for the client to connect
     address = f"{socket.gethostname()}:{port}"
-    logger.info(f"{app_name} writing connection info {address} to {app_name}.conn_info")
+    logger.debug(f"{app_name} writing connection info {address} to {app_name}.conn_info")
     with open(f"{app_name}.conn_info", "w") as f:
         f.write(f"{address}")
 
     # Start listening for connections
-    logger.info(f"{app_name} listening for incoming connection")
+    logger.debug(f"{app_name} listening for incoming connection")
     addr = (socket.gethostname(), port)
     listener = Listener(addr)
     conn = listener.accept()
     logger.info(f"{app_name} established connection.")
 
     # Recv ack from client that it is ready
-    logger.info(f"{app_name} waiting for ready signal from client thread.")
+    logger.debug(f"{app_name} waiting for ready signal from client thread.")
     msg = conn.recv()
-    logger.info(f"{app_name} received {msg} from client thread.")
+    logger.debug(f"{app_name} received {msg} from client thread.")
     assert msg == signals.CLIENT_READY, f"EFFIS server thread for {app_name} received unknown acknowledgement {msg} instead of {signals.CLIENT_READY}"
 
     # Wait for a message
     msg = None
     if thread_type == 'sender':
         # receive message from analysis client and forward it to the application
-        logger.info(f"{app_name} waiting for message from client thread.")
+        logger.debug(f"{app_name} waiting for message from client thread.")
         msg = conn.recv()
         
-        logger.info(f"{app_name} received {msg} from client thread. Forwarding to effis server")
+        logger.debug(f"{app_name} received {msg} from client thread. Forwarding to effis server")
         q.put(msg)
     elif thread_type == 'listener':
         # extract signal from the queue from the analysis server and forward it to the simulation client
-        logger.info(f"{app_name} waiting for message from effis server.")
+        logger.debug(f"{app_name} waiting for message from effis server.")
         msg = q.get()
         q.task_done()
         
-        logger.info(f"{app_name} received {msg} from effis server. Forwarding to app client thread.")
+        logger.debug(f"{app_name} received {msg} from effis server. Forwarding to app client thread.")
         conn.send(msg)
     else:
         raise Exception(f"Cannot understand type {thread_type} of server thread to launch for {app_name}")
@@ -72,7 +72,7 @@ def _get_port():
 
 def launch_server_thread(app_name, q, thread_type):
     port = _get_port()
-    logger.info(f"{app_name} launching server thread on port {port}")
+    logger.debug(f"{app_name} launching server thread on port {port}")
     t = Thread(target=server_thread, args=(port, app_name, q, thread_type))
     t.start()
 

@@ -70,10 +70,10 @@ def main():
                 icheckpoint += 1
                 checkpoint(checkpoint_engine, v2, icheckpoint, t)
 
-            logger.info(f"{app_name} calling effis_check")
+            logger.debug(f"{app_name} calling effis_check")
             if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
                                 cleanup_args = (writer, checkpoint_engine)):
-                logger.info(f"{app_name} app received 1 from effis_check. Terminating loop")
+                logger.warning(f"{app_name} app received 1 from effis_check. Terminating loop")
                 break
         
         logger.info(f"{app_name} calling cleanup")

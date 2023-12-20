@@ -24,13 +24,13 @@ def effis_init(app_name, checkpoint_routine=None, cleanup_routine=None):
     if MPI.COMM_WORLD.Get_rank() != 0:
         return
 
-    logger.info(f"{app_name} ready to create effis client thread")
+    logger.debug(f"{app_name} ready to create effis client thread")
     # Create queue and spawn listener. Wait for listener to spawn up and indicate all is good.
     _q = Queue()
     _t = Thread(target=effis_client, args=(app_name, _q,))
     _t.start()
 
-    logger.info(f"{app_name} exiting effis_init.")
+    logger.debug(f"{app_name} exiting effis_init.")
 
 
 def effis_check(checkpoint_args = (), cleanup_args = ()):
@@ -41,7 +41,7 @@ def effis_check(checkpoint_args = (), cleanup_args = ()):
     # check queue if a signal has been received
     if rank == 0:
         try:
-            logger.info(f"{_app_name} checking to see if a signal has been delivered.")
+            logger.debug(f"{_app_name} checking to see if a signal has been delivered.")
             signal = _q.get(block=False)
             _q.task_done()
         except Empty:
@@ -49,14 +49,14 @@ def effis_check(checkpoint_args = (), cleanup_args = ()):
             signal = EFFIS_CONTINUE
     
     # Handle signals
-    if rank == 0: logger.info(f"{_app_name} Broadcasting signal {signal}.")
+    if rank == 0: logger.debug(f"{_app_name} Broadcasting signal {signal}.")
     signal = MPI.COMM_WORLD.bcast(signal)
     if signal == EFFIS_CONTINUE:
         return
 
     # Handle signal to safely terminate the application
     elif signal == EFFIS_SIGTERM:
-        logger.info(f"{_app_name} received {signal}. Performing checkpoint.")
+        logger.warning(f"{_app_name} received {signal}. Performing checkpoint.")
         _checkpoint_routine(*checkpoint_args)
         
         if _cleanup_routine is not None:
@@ -66,14 +66,14 @@ def effis_check(checkpoint_args = (), cleanup_args = ()):
             logger.info(f"{_app_name} performed cleanup.")
 
         if rank == 0:
-            logger.info(f"{_app_name} waiting for client thread to terminate")
+            logger.debug(f"{_app_name} waiting for client thread to terminate")
             # Stop the app client
             _t.join()
 
         retval = 1
 
     elif signal == CLIENT_DONE:
-        logger.info(f"{_app_name} received {signal}.")
+        logger.debug(f"{_app_name} received {signal}.")
 
     else:
         raise Exception(f"{_app_name} received unknown signal {signal} from app-client")
@@ -86,7 +86,7 @@ def effis_signal(signal):
         return
 
     global _app_name
-    logger.info(f"{_app_name} putting {signal} in queue")
+    logger.debug(f"{_app_name} putting {signal} in queue")
     _q.put(signal)
 
 
