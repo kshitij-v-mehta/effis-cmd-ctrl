@@ -1,6 +1,6 @@
 import adios2
 from mpi4py import MPI
-import os, sys
+import os, sys, traceback
 import effis.signals as effis_signals
 from effis.api import effis_init, effis_finalize, effis_signal
 from utils.logger import logger
@@ -53,4 +53,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+
