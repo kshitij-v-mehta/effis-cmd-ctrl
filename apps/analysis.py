@@ -24,12 +24,12 @@ def main():
         ad_var = io.InquireVariable("Str")
         v = engine.Get(ad_var)
 
-        logger.info(f"{app_name} read next step. Value: {v}")
-
         # Indicate error condition
         retval = 0
         cur_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[0])
         total_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[1]) 
+
+        logger.info(f"{app_name} read next step. Value: {v}, cur_t: {cur_t}, total_t: {total_t}")
 
         if rank != 0:
             if cur_t > total_t // 2:

@@ -12,7 +12,7 @@ def cleanup(writer, checkpoint_engine):
 
 
 def checkpoint(adios2_writer, v, i, t):
-    logger.info("simulation main app performing checkpoint")
+    if MPI.COMM_WORLD.Get_rank()==0: logger.info("simulation main app performing checkpoint")
     adios2_writer.BeginStep()
     adios2_writer.Put(v, f"Checkpoint {i}, timestep {t}")
     adios2_writer.EndStep()
@@ -43,7 +43,7 @@ def main():
         app_name = f"{os.path.basename(sys.argv[0])}"
         rank = MPI.COMM_WORLD.Get_rank()
 
-        nt = 10
+        nt = 20
         icheckpoint = 0
         ad2 = adios2.ADIOS()
 
@@ -55,7 +55,7 @@ def main():
         effis_init(os.path.basename(sys.argv[0]), checkpoint, None)
 
         # Begin timestepping
-        logger.info(f"{app_name} starting timestepping")
+        if rank==0: logger.info(f"{app_name} starting timestepping")
         for t in range(nt):
             if rank == 0:
                 logger.info(f"{app_name} starting timestep {t}")
@@ -73,16 +73,16 @@ def main():
             logger.debug(f"{app_name} calling effis_check")
             if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
                                 cleanup_args = (writer, checkpoint_engine)):
-                logger.warning(f"{app_name} app received 1 from effis_check. Terminating loop")
+                if rank==0: logger.warning(f"{app_name} app received 1 from effis_check. Terminating loop")
                 break
         
-        logger.info(f"{app_name} calling cleanup")
+        if rank==0: logger.info(f"{app_name} calling cleanup")
         cleanup(writer, checkpoint_engine)
         
-        logger.info(f"{app_name} calling effis_finalize")
+        if rank==0: logger.info(f"{app_name} calling effis_finalize")
         effis_finalize()
         
-        logger.info(f"{app_name} done. Exiting.")
+        if rank==0: logger.info(f"{app_name} done. Exiting.")
 
     except Exception as e:
         print(e)

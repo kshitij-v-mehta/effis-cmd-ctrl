@@ -56,7 +56,7 @@ def effis_check(checkpoint_args = (), cleanup_args = ()):
 
     # Handle signal to safely terminate the application
     elif signal == EFFIS_SIGTERM:
-        logger.warning(f"{_app_name} received {signal}. Performing checkpoint.")
+        if rank==0: logger.warning(f"{_app_name} received {signal}. Performing checkpoint.")
         _checkpoint_routine(*checkpoint_args)
         
         if _cleanup_routine is not None:
@@ -73,7 +73,7 @@ def effis_check(checkpoint_args = (), cleanup_args = ()):
         retval = 1
 
     elif signal == CLIENT_DONE:
-        logger.debug(f"{_app_name} received {signal}.")
+        if rank==0: logger.debug(f"{_app_name} received {signal}.")
 
     else:
         raise Exception(f"{_app_name} received unknown signal {signal} from app-client")
