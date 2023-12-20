@@ -34,12 +34,16 @@ def init_adios_objects(ad2):
     return writer, checkpoint_engine, v1, v2
 
 
+def perform_computation():
+    time.sleep(1)
+
+
 def main():
     try:
         app_name = f"{os.path.basename(sys.argv[0])}"
         rank = MPI.COMM_WORLD.Get_rank()
 
-        nt = 100
+        nt = 10
         icheckpoint = 0
         ad2 = adios2.ADIOS()
 
@@ -55,9 +59,11 @@ def main():
         for t in range(nt):
             if rank == 0:
                 logger.info(f"{app_name} starting timestep {t}")
-            time.sleep(0.1)
+
+            perform_computation()
+
             writer.BeginStep()
-            writer.Put(v1, f"Timestep {t} from {app_name}, P{rank}")
+            writer.Put(v1, f"Timestep {t}/{nt-1} from {app_name}, P{rank}")
             writer.EndStep()
 
             if t % 3 == 0 and t != 0:
@@ -85,3 +91,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

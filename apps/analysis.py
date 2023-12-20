@@ -28,8 +28,11 @@ def main():
 
         # Indicate error condition
         retval = 0
+        cur_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[0])
+        total_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[1]) 
+
         if rank != 0:
-            if 'Timestep 5' in v:
+            if cur_t > total_t // 2:
                 retval = 1
         check = MPI.COMM_WORLD.allreduce(retval)
         if check > 0:
