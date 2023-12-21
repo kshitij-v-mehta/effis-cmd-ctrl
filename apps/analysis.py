@@ -29,7 +29,7 @@ def main():
         cur_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[0])
         total_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[1]) 
 
-        if rank==0: logger.info(f"{app_name} read next step. Value: {v}, cur_t: {cur_t}, total_t: {total_t}")
+        if rank==0: logger.info(f"{app_name} read next step. Value: '{v}'")
 
         if rank != 0:
             if cur_t > total_t // 2:
