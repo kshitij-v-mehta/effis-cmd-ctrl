@@ -1,4 +1,4 @@
-import subprocess
+import os, subprocess
 from effis.server import launch_server_thread
 from queue import Queue
 from utils.logger import logger
@@ -10,19 +10,20 @@ _q = Queue()
 
 
 class _App:
-    def __init__(self, name, exe, input_args, nprocs, ppn, cpus_per_task, gpus_per_task, working_dir):
+    def __init__(self, name, exe, input_args, nprocs, ppn, num_nodes, cpus_per_task, gpus_per_task, working_dir):
         self.name = name
         self.exe = exe
         self.input_args = input_args
         self.nprocs = nprocs
         self.ppn = ppn
+        self.num_nodes = num_nodes
         self.cpus_per_task = cpus_per_task
         self.gpus_per_task = gpus_per_task
         self.working_dir = working_dir
 
 
 def form_slurm_cmd(app):
-    run_cmd = f"srun --exclusive -n {app.nprocs} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} python3 {app.exe}"
+    run_cmd = f"srun -n {app.nprocs} -N {app.num_nodes} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} python3 {app.exe}"
     return run_cmd.split()
 
 
@@ -46,15 +47,16 @@ def _launch(app):
 
 
 def _launch_apps():
+    sim_num_nodes = int(os.getenv("SLURM_JOB_NUM_NODES"))-1
     simulation = _App(name='simulation.py', 
                       exe="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/simulation.py", 
-                      input_args = (), nprocs=10, ppn=10, cpus_per_task=1, gpus_per_task=None,
-                      working_dir="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/test-dir")
+                      input_args = (), nprocs=32*sim_num_nodes, ppn=32, num_nodes=sim_num_nodes, 
+                      cpus_per_task=1, gpus_per_task=None, working_dir=os.getcwd())
 
     analysis   = _App(name='analysis.py', 
                       exe="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/analysis.py", 
-                      input_args = (), nprocs=2, ppn=2, cpus_per_task=1, gpus_per_task=None,
-                      working_dir="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/test-dir")
+                      input_args = (), nprocs=32, ppn=32, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
+                      working_dir=os.getcwd())
 
     _apps_running.append(_launch(simulation))
     _apps_running.append(_launch(analysis))
