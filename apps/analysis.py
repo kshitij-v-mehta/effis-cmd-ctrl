@@ -11,14 +11,14 @@ def main():
     rank = MPI.COMM_WORLD.Get_rank()
 
     # Start effis socket thread
-    logger.info(f"{app_name} calling effis_init")
+    if rank==0: logger.info(f"{app_name} calling effis_init")
     effis_init(os.path.basename(app_name))
 
     ad2 = adios2.ADIOS()
     io = ad2.DeclareIO("reader")
     io.SetEngine("BP5")
     engine = io.Open("test.bp", adios2.Mode.Read, MPI.COMM_WORLD)
-    logger.info(f"{app_name} opened test.bp for reading")
+    if rank==0: logger.info(f"{app_name} opened test.bp for reading")
     
     while(engine.BeginStep() == adios2.StepStatus.OK):
         ad_var = io.InquireVariable("Str")
@@ -29,27 +29,27 @@ def main():
         cur_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[0])
         total_t = int(v.split("Timestep")[1].split(" from")[0].split("/")[1]) 
 
-        logger.info(f"{app_name} read next step. Value: {v}, cur_t: {cur_t}, total_t: {total_t}")
+        if rank==0: logger.info(f"{app_name} read next step. Value: {v}, cur_t: {cur_t}, total_t: {total_t}")
 
         if rank != 0:
             if cur_t > total_t // 2:
                 retval = 1
         check = MPI.COMM_WORLD.allreduce(retval)
         if check > 0:
-            logger.warning(f"{app_name} detected condition. Sending signal")
+            if rank==0: logger.warning(f"{app_name} detected condition. Sending signal")
             effis_signal(effis_signals.EFFIS_SIGTERM)
             engine.EndStep()
             break
 
         engine.EndStep()
     engine.Close()
-    logger.info(f"{app_name} closed test.bp")
+    if rank==0: logger.info(f"{app_name} closed test.bp")
 
     # Shut the socket thread
-    logger.info(f"{app_name} calling effis_finalize")
+    if rank==0: logger.info(f"{app_name} calling effis_finalize")
     effis_finalize()
 
-    logger.info(f"{app_name} done. Exiting.")
+    if rank==0: logger.info(f"{app_name} done. Exiting.")
 
 
 if __name__ == '__main__':
