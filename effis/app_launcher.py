@@ -10,7 +10,7 @@ _q = Queue()
 
 
 class _App:
-    def __init__(self, name, exe, input_args, nprocs, ppn, num_nodes, cpus_per_task, gpus_per_task, working_dir):
+    def __init__(self, name, exe, input_args, nprocs, ppn, num_nodes, cpus_per_task, gpus_per_task, tau_profiling, working_dir):
         self.name = name
         self.exe = exe
         self.input_args = input_args
@@ -20,10 +20,14 @@ class _App:
         self.cpus_per_task = cpus_per_task
         self.gpus_per_task = gpus_per_task
         self.working_dir = working_dir
+        self.tau_profiling = tau_profiling
 
 
 def form_slurm_cmd(app):
-    run_cmd = f"srun -n {app.nprocs} -N {app.num_nodes} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} python3 {app.exe}"
+    if app.tau_profiling:
+        run_cmd = f"srun -n {app.nprocs} -N {app.num_nodes} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} tau_exec python3 {app.exe}"
+    else:
+        run_cmd = f"srun -n {app.nprocs} -N {app.num_nodes} --ntasks-per-node={app.ppn} --cpus-per-task={app.cpus_per_task} python3 {app.exe}"
     return run_cmd.split()
 
 
@@ -42,21 +46,27 @@ def _launch(app):
     # run_cmd = form_mpi_cmd(app)
     
     logger.info(f"{app.name} launching application as {run_cmd}")
-    p = subprocess.Popen(run_cmd, cwd=app.working_dir)
+    env = os.environ
+    if app.tau_profiling:
+        env['TAU_PROFILE'] = "1"
+        env['PROFILE_DIR'] = os.path.join(app.working_dir, 'tau-profile')
+        logger.debug(f"{app.name} Added tau profiling to env")
+    p = subprocess.Popen(run_cmd, cwd=app.working_dir, env=env)
     return p
 
 
 def _launch_apps():
-    sim_num_nodes = int(os.getenv("SLURM_JOB_NUM_NODES"))-1
+    sim_num_nodes = int(os.getenv("SLURM_JOB_NUM_NODES") or 0)-1
     simulation = _App(name='simulation.py', 
                       exe="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/simulation.py", 
                       input_args = (), nprocs=32*sim_num_nodes, ppn=32, num_nodes=sim_num_nodes, 
-                      cpus_per_task=1, gpus_per_task=None, working_dir=os.getcwd())
+                      cpus_per_task=1, gpus_per_task=None, 
+                      tau_profiling=False, working_dir=os.getcwd())
 
     analysis   = _App(name='analysis.py', 
                       exe="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/analysis.py", 
                       input_args = (), nprocs=32, ppn=32, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
-                      working_dir=os.getcwd())
+                      tau_profiling=False, working_dir=os.getcwd())
 
     _apps_running.append(_launch(simulation))
     _apps_running.append(_launch(analysis))
