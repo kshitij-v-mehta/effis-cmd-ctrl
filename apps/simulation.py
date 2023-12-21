@@ -43,8 +43,12 @@ def main():
         app_name = f"{os.path.basename(sys.argv[0])}"
         rank = MPI.COMM_WORLD.Get_rank()
 
-        nt = 20
+        effis_overhead = 0.0
+        total_time = 0.0
+        nt = 200
         icheckpoint = 0
+
+        program_timer = time.time()
         ad2 = adios2.ADIOS()
 
         writer, checkpoint_engine, v1, v2 = init_adios_objects(ad2)
@@ -52,7 +56,9 @@ def main():
         if rank == 0:
             logger.info(f"{app_name} initialized adios. Now calling effis_init")
         
+        if rank==0: timer_start = time.time()
         effis_init(os.path.basename(sys.argv[0]), checkpoint, None)
+        if rank==0: effis_overhead += time.time()-timer_start
 
         # Begin timestepping
         if rank==0: logger.info(f"{app_name} starting timestepping")
@@ -71,18 +77,27 @@ def main():
                 checkpoint(checkpoint_engine, v2, icheckpoint, t)
 
             logger.debug(f"{app_name} calling effis_check")
+            if rank==0: timer_start = time.time()
             if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
                                 cleanup_args = (writer, checkpoint_engine)):
-                if rank==0: logger.warning(f"{app_name} app received 1 from effis_check. Terminating loop")
+                if rank==0:
+                    logger.warning(f"{app_name} app received 1 from effis_check. Terminating loop")
+                    effis_overhead = time.time() - timer_start
                 break
+            if rank==0: effis_overhead += time.time() - timer_start
         
         if rank==0: logger.info(f"{app_name} calling cleanup")
         cleanup(writer, checkpoint_engine)
         
         if rank==0: logger.info(f"{app_name} calling effis_finalize")
+        if rank==0: timer_start = time.time()
         effis_finalize()
+        if rank==0: effis_overhead += time.time() - timer_start
         
-        if rank==0: logger.info(f"{app_name} done. Exiting.")
+        if rank==0:
+            logger.info(f"{app_name} effis overhead: {round(effis_overhead, 3)} seconds")
+            logger.info(f"{app_name} total program time: {round(time.time()-program_timer, 2)} seconds")
+            logger.info(f"{app_name} done. Exiting.")
 
     except Exception as e:
         print(e)
