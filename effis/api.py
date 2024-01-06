@@ -33,7 +33,15 @@ def effis_init(app_name, checkpoint_routine=None, cleanup_routine=None):
     logger.debug(f"{app_name} exiting effis_init.")
 
 
-def effis_check(checkpoint_args = (), cleanup_args = ()):
+def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict = None):
+    """
+    Check if a signal has been delivered.
+    The effis server spawned by the root process check for a signal. If found, it broadcasts to other processes, else
+    broadcasts EFFIS_CONTINUE.
+    Signal may be one of effis-defined signals (EFFIS_CONTINUE, EFFIS_SIGTERM etc.) or a user-defined signal in
+    signal_callbacks.
+    signal_callbacks contains a callback function and associated arguments for a signal.
+    """
     rank = MPI.COMM_WORLD.Get_rank()
     signal = None
     retval = 0
@@ -49,12 +57,22 @@ def effis_check(checkpoint_args = (), cleanup_args = ()):
             signal = EFFIS_CONTINUE
     
     # Handle signals
+    valid_signals = [EFFIS_CONTINUE, EFFIS_SIGTERM, CLIENT_DONE]
+    if signal_callbacks is not None:
+        valid_signals.extend(list(signal_callbacks.keys()))
+
+    if signal not in valid_signals:
+        raise Exception(f"{_app_name} received unknown signal {signal} from app-client")
+
+    # Broadcast signal to all processes
     if rank == 0: logger.debug(f"{_app_name} Broadcasting signal {signal}.")
     signal = MPI.COMM_WORLD.bcast(signal)
+
+    # Nothing to do. Return to main app
     if signal == EFFIS_CONTINUE:
         return
 
-    # Handle signal to safely terminate the application
+    # Terminate the application safely
     elif signal == EFFIS_SIGTERM:
         if rank==0: logger.warning(f"{_app_name} received {signal}. Performing checkpoint.")
         _checkpoint_routine(*checkpoint_args)
@@ -76,7 +94,17 @@ def effis_check(checkpoint_args = (), cleanup_args = ()):
         if rank==0: logger.debug(f"{_app_name} received {signal}.")
 
     else:
-        raise Exception(f"{_app_name} received unknown signal {signal} from app-client")
+        # Received one of the user-defined signals from the analysis program
+        assert signal_callbacks is not None, "signal_callbacks cannot be None here"
+        assert signal in list(signal_callbacks.keys()), f"Expected one of {list(signal_callbacks.keys())}, " \
+                                                        f"found {signal}"
+
+        signal_params = signal_callbacks[signal]
+        callback = signal_params['f']
+        callback_args = signal_params['args']
+
+        logger.info(f"effis_check received {signal}. Executing callback {callback}")
+        callback(*callback_args)
 
     return retval
 
