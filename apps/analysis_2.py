@@ -37,7 +37,7 @@ def main():
 
         # Signal the simulation to start/stop stream2
         if rank == 0:
-            if cur_t > total_t // 2:
+            if cur_t == total_t // 2:
                 retval = 1
             if cur_t == total_t - 2:
                 retval = -1
