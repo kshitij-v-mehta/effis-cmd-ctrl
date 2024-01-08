@@ -1,6 +1,6 @@
 from multiprocessing.connection import Listener
 from threading import Thread
-import socket
+import os, socket
 import effis.signals as signals
 from utils.logger import logger
 
@@ -18,7 +18,8 @@ def server_thread(port, app_name, q, thread_type):
     # Write connection info for the client to connect
     address = f"{socket.gethostname()}:{port}"
     logger.debug(f"{app_name} writing connection info {address} to {app_name}.conn_info")
-    with open(f"{app_name}.conn_info", "w") as f:
+    conn_info = f"{app_name}.conn_info" 
+    with open(conn_info, "w") as f:
         f.write(f"{address}")
 
     # Start listening for connections
@@ -57,6 +58,10 @@ def server_thread(port, app_name, q, thread_type):
     # Close after you received a message
     logger.info(f"{app_name} closing connection")
     conn.close()
+    try:
+        os.remove(conn_info)
+    except FileNotFoundError:
+        pass
 
 
 def _get_port():
