@@ -26,8 +26,9 @@ def effis_init(app_name, checkpoint_routine=None, cleanup_routine=None):
 
     logger.debug(f"{app_name} ready to create effis client thread")
     # Create queue and spawn listener. Wait for listener to spawn up and indicate all is good.
+    thread_type = 'listener' if 'analysis' in app_name else 'sender'
     _q = Queue()
-    _t = Thread(target=effis_client, args=(app_name, _q,))
+    _t = Thread(target=effis_client, args=(app_name, _q, thread_type))
     _t.start()
 
     logger.debug(f"{app_name} exiting effis_init.")
