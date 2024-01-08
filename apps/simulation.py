@@ -54,20 +54,22 @@ def write_stream2(stream2_writer, ad2):
         stream2_writer["var"] = v1
         stream2_writer["writer"] = writer
 
-    stream2_writer.BeginStep()
-    stream2_writer.Put(stream2_writer["var"], f"datetime.datetime.today()")
-    stream2_writer.EndStep()
+    stream2_writer['writer'].BeginStep()
+    stream2_writer['writer'].Put(stream2_writer["var"], f"{datetime.datetime.today()}")
+    stream2_writer['writer'].EndStep()
+
+    return stream2_writer
 
 
-def disable_stream2(flag):
+def disable_stream2(flag_dict):
     """A callback for effis to disable writing stream2.bp"""
-    flag = False
+    flag_dict['flag'] = True
     if MPI.COMM_WORLD.Get_rank() == 0: logger.info("Callback; Disabled stream2 in the simulation")
 
 
-def enable_stream2(flag):
+def enable_stream2(flag_dict):
     """A callback for effis to enable writing stream2.bp"""
-    flag = True
+    flag_dict['flag'] = True
     if MPI.COMM_WORLD.Get_rank() == 0: logger.info("Callback; Enabled stream2 in the simulation")
 
 
@@ -82,10 +84,10 @@ def main():
 
         effis_overhead = 0.0
         total_time = 0.0
-        nt = 200
+        nt = 20
         icheckpoint = 0
 
-        stream2_enabled = False
+        stream2_enabled = {'flag': False}
 
         program_timer = time.time()
         ad2 = adios2.ADIOS()
@@ -115,9 +117,9 @@ def main():
 
             # This is dynamically controlled. stream2_enabled is set/unset by effis.
             # If enabled, write a step of stream2.bp
-            if stream2_enabled:
+            if stream2_enabled['flag']:
                 if rank == 0: logger.info(f"{app_name} stream2 enabled. Writing a step")
-                write_stream2(stream2_writer, ad2)
+                stream2_writer = write_stream2(stream2_writer, ad2)
 
             # Write a checkpoint every few timesteps
             if t % 3 == 0 and t != 0:
@@ -131,8 +133,8 @@ def main():
             # Pass args if applicable for the checkpoint and cleanup routines
             # Pass a callback for other signals that the simulation wants to subscribe to
             signals_subscribed = \
-                {"START_STREAM2": {'f': enable_stream2,  'args': (stream2_enabled,)},
-                 "STOP_STREAM2":  {'f': disable_stream2, 'args': (stream2_enabled,)}, }
+                {"START_STREAM2": {'f': enable_stream2,  'args': stream2_enabled},
+                 "STOP_STREAM2":  {'f': disable_stream2, 'args': stream2_enabled}, }
 
             if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
                                 cleanup_args = (writer, checkpoint_engine),
