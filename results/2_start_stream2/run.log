@@ -1,0 +1,87 @@
++ ROOT=/lustre/orion/world-shared/csc143/kmehta/effis-cmd-ctrl
++ export PYTHONPATH=/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:
++ PYTHONPATH=/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:
++ rm -rf '*.bp' '*.conn_info' 'tau-profile/*'
++ python3 /lustre/orion/world-shared/csc143/kmehta/effis-cmd-ctrl/effis/app_launcher.py
+      INFO | 2024-01-08 13:21:56 |  app_launcher.py:                         _launch(): 48 | simulation.py launching application as ['srun', '-n', '64', '-N', '2', '--ntasks-per-node=32', '--cpus-per-task=1', 'python3', '/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/simulation.py']
+      INFO | 2024-01-08 13:21:56 |  app_launcher.py:                         _launch(): 48 | analysis_2.py launching application as ['srun', '-n', '32', '-N', '1', '--ntasks-per-node=32', '--cpus-per-task=1', 'python3', '/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/analysis_2.py']
+      INFO | 2024-01-08 13:21:57 |    analysis_2.py:                            main(): 19 | analysis_2.py calling effis_init
+      INFO | 2024-01-08 13:21:57 |    simulation.py:                            main(): 99 | simulation.py initialized adios. Now calling effis_init
+      INFO | 2024-01-08 13:21:57 |    simulation.py:                            main():106 | simulation.py starting timestepping
+      INFO | 2024-01-08 13:21:57 |    simulation.py:                            main():109 | simulation.py starting timestep 0
+      INFO | 2024-01-08 13:21:57 |        client.py:                    effis_client(): 18 | simulation.py connection established
+      INFO | 2024-01-08 13:21:57 |        server.py:                   server_thread(): 30 | simulation.py established connection.
+      INFO | 2024-01-08 13:21:58 |    analysis_2.py:                            main(): 26 | analysis_2.py opened test.bp for reading
+      INFO | 2024-01-08 13:21:58 |    simulation.py:                            main():109 | simulation.py starting timestep 1
+      INFO | 2024-01-08 13:21:59 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 0/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:21:59 |    simulation.py:                            main():109 | simulation.py starting timestep 2
+      INFO | 2024-01-08 13:22:00 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 1/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:00 |    simulation.py:                            main():109 | simulation.py starting timestep 3
+      INFO | 2024-01-08 13:22:01 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 2/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:01 |        server.py:                   server_thread(): 30 | analysis_2.py established connection.
+      INFO | 2024-01-08 13:22:01 |    simulation.py:                      checkpoint(): 19 | simulation main app performing checkpoint
+      INFO | 2024-01-08 13:22:01 |    simulation.py:                            main():109 | simulation.py starting timestep 4
+      INFO | 2024-01-08 13:22:02 |        client.py:                    effis_client(): 18 | analysis_2.py connection established
+      INFO | 2024-01-08 13:22:02 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 3/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:02 |    simulation.py:                            main():109 | simulation.py starting timestep 5
+      INFO | 2024-01-08 13:22:03 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 4/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:03 |    simulation.py:                            main():109 | simulation.py starting timestep 6
+      INFO | 2024-01-08 13:22:04 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 5/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:04 |    simulation.py:                      checkpoint(): 19 | simulation main app performing checkpoint
+      INFO | 2024-01-08 13:22:04 |    simulation.py:                            main():109 | simulation.py starting timestep 7
+      INFO | 2024-01-08 13:22:05 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 6/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:05 |    simulation.py:                            main():109 | simulation.py starting timestep 8
+      INFO | 2024-01-08 13:22:06 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 7/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:06 |    simulation.py:                            main():109 | simulation.py starting timestep 9
+      INFO | 2024-01-08 13:22:07 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 8/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:07 |    simulation.py:                      checkpoint(): 19 | simulation main app performing checkpoint
+      INFO | 2024-01-08 13:22:07 |    simulation.py:                            main():109 | simulation.py starting timestep 10
+      INFO | 2024-01-08 13:22:08 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 9/19 from simulation.py, P0'
+   WARNING | 2024-01-08 13:22:08 |    analysis_2.py:                            main(): 48 | analysis_2.py detected condition. Sending START_STREAM2
+      INFO | 2024-01-08 13:22:08 |    simulation.py:                            main():109 | simulation.py starting timestep 11
+      INFO | 2024-01-08 13:22:09 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 10/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:09 |           api.py:                     effis_check():107 | effis_check received START_STREAM2. Executing callback <function enable_stream2 at 0x7fca28070dd0>
+      INFO | 2024-01-08 13:22:09 |    simulation.py:                  enable_stream2(): 73 | Callback; Enabled stream2 in the simulation
+      INFO | 2024-01-08 13:22:09 |    simulation.py:                            main():109 | simulation.py starting timestep 12
+      INFO | 2024-01-08 13:22:10 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 11/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:10 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:10 |    simulation.py:                      checkpoint(): 19 | simulation main app performing checkpoint
+      INFO | 2024-01-08 13:22:10 |    simulation.py:                            main():109 | simulation.py starting timestep 13
+      INFO | 2024-01-08 13:22:11 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 12/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:11 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:11 |    simulation.py:                            main():109 | simulation.py starting timestep 14
+      INFO | 2024-01-08 13:22:12 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 13/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:13 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:13 |    simulation.py:                            main():109 | simulation.py starting timestep 15
+      INFO | 2024-01-08 13:22:13 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 14/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:14 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:14 |    simulation.py:                      checkpoint(): 19 | simulation main app performing checkpoint
+      INFO | 2024-01-08 13:22:14 |    simulation.py:                            main():109 | simulation.py starting timestep 16
+      INFO | 2024-01-08 13:22:14 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 15/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:15 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:15 |    simulation.py:                            main():109 | simulation.py starting timestep 17
+      INFO | 2024-01-08 13:22:15 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 16/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:16 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:16 |    simulation.py:                            main():109 | simulation.py starting timestep 18
+      INFO | 2024-01-08 13:22:16 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 17/19 from simulation.py, P0'
+   WARNING | 2024-01-08 13:22:16 |    analysis_2.py:                            main(): 51 | analysis_2.py detected condition. Sending STOP_STREAM2
+      INFO | 2024-01-08 13:22:17 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:17 |    simulation.py:                      checkpoint(): 19 | simulation main app performing checkpoint
+      INFO | 2024-01-08 13:22:17 |    simulation.py:                            main():109 | simulation.py starting timestep 19
+      INFO | 2024-01-08 13:22:18 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 18/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:18 |    simulation.py:                            main():121 | simulation.py stream2 enabled. Writing a step
+      INFO | 2024-01-08 13:22:18 |           api.py:                     effis_check():107 | effis_check received STOP_STREAM2. Executing callback <function disable_stream2 at 0x7fca28070680>
+      INFO | 2024-01-08 13:22:18 |    simulation.py:                 disable_stream2(): 67 | Callback; Disabled stream2 in the simulation
+      INFO | 2024-01-08 13:22:18 |    simulation.py:                            main():150 | simulation.py calling cleanup
+      INFO | 2024-01-08 13:22:18 |    simulation.py:                            main():154 | simulation.py calling effis_finalize
+      INFO | 2024-01-08 13:22:19 |    analysis_2.py:                            main(): 36 | analysis_2.py read next step. Value: 'Timestep 19/19 from simulation.py, P0'
+      INFO | 2024-01-08 13:22:19 |    analysis_2.py:                            main(): 57 | analysis_2.py closed test.bp
+      INFO | 2024-01-08 13:22:19 |    analysis_2.py:                            main(): 60 | analysis_2.py calling effis_finalize
+      INFO | 2024-01-08 13:22:19 |        client.py:                    effis_client(): 46 | analysis_2.py exiting effis_client.
+      INFO | 2024-01-08 13:22:19 |        server.py:                   server_thread(): 60 | analysis_2.py closing connection
+      INFO | 2024-01-08 13:22:19 |    analysis_2.py:                            main(): 63 | analysis_2.py done. Exiting.
+      INFO | 2024-01-08 13:22:19 |        server.py:                   server_thread(): 60 | simulation.py closing connection
+      INFO | 2024-01-08 13:22:19 |        client.py:                    effis_client(): 46 | simulation.py exiting effis_client.
+      INFO | 2024-01-08 13:22:19 |    simulation.py:                            main():160 | simulation.py effis overhead: 0.904 seconds
+      INFO | 2024-01-08 13:22:19 |    simulation.py:                            main():161 | simulation.py total program time: 22.11 seconds
+      INFO | 2024-01-08 13:22:19 |    simulation.py:                            main():162 | simulation.py done. Exiting.

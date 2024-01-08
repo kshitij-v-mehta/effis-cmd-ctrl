@@ -1,0 +1,266 @@
++ export PYTHONPATH=/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:
++ PYTHONPATH=/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:/lustre/orion/csc143/world-shared/kmehta/sw/ADIOS2-2.9.2/installation/andes/gcc-9.3.0/lib/python3.7/site-packages/:
++ rm -rf checkpoint.bp test.bp analysis.py.conn_info simulation.py.conn_info 'tau-profile/*'
++ python3 ../effis/app_launcher.py
+INFO | 2023-12-20 21:07:52 |  app_launcher.py:                         _launch(): 48 | simulation.py launching application as ['srun', '-n', '3168', '-N', '99', '--ntasks-per-node=32', '--cpus-per-task=1', 'python3', '/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/simulation.py']
+INFO | 2023-12-20 21:07:52 |  app_launcher.py:                         _launch(): 48 | analysis.py launching application as ['srun', '-n', '32', '-N', '1', '--ntasks-per-node=32', '--cpus-per-task=1', 'python3', '/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/analysis.py']
+INFO | 2023-12-20 21:07:57 |      analysis.py:                            main(): 14 | analysis.py calling effis_init
+INFO | 2023-12-20 21:08:03 |    simulation.py:                            main(): 57 | simulation.py initialized adios. Now calling effis_init
+INFO | 2023-12-20 21:08:03 |    simulation.py:                            main(): 64 | simulation.py starting timestepping
+INFO | 2023-12-20 21:08:03 |    simulation.py:                            main(): 67 | simulation.py starting timestep 0
+INFO | 2023-12-20 21:08:03 |        client.py:                    effis_client(): 18 | simulation.py connection established
+INFO | 2023-12-20 21:08:03 |        server.py:                   server_thread(): 29 | simulation.py established connection.
+INFO | 2023-12-20 21:08:04 |      analysis.py:                            main(): 21 | analysis.py opened test.bp for reading
+INFO | 2023-12-20 21:08:11 |    simulation.py:                            main(): 67 | simulation.py starting timestep 1
+INFO | 2023-12-20 21:08:12 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 0/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:12 |    simulation.py:                            main(): 67 | simulation.py starting timestep 2
+INFO | 2023-12-20 21:08:13 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 1/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:13 |    simulation.py:                            main(): 67 | simulation.py starting timestep 3
+INFO | 2023-12-20 21:08:14 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 2/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:15 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:15 |    simulation.py:                            main(): 67 | simulation.py starting timestep 4
+INFO | 2023-12-20 21:08:15 |        server.py:                   server_thread(): 29 | analysis.py established connection.
+INFO | 2023-12-20 21:08:15 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 3/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:15 |        client.py:                    effis_client(): 18 | analysis.py connection established
+INFO | 2023-12-20 21:08:16 |    simulation.py:                            main(): 67 | simulation.py starting timestep 5
+INFO | 2023-12-20 21:08:16 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 4/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:17 |    simulation.py:                            main(): 67 | simulation.py starting timestep 6
+INFO | 2023-12-20 21:08:17 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 5/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:18 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:18 |    simulation.py:                            main(): 67 | simulation.py starting timestep 7
+INFO | 2023-12-20 21:08:18 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 6/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:19 |    simulation.py:                            main(): 67 | simulation.py starting timestep 8
+INFO | 2023-12-20 21:08:19 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 7/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:20 |    simulation.py:                            main(): 67 | simulation.py starting timestep 9
+INFO | 2023-12-20 21:08:20 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 8/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:21 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:21 |    simulation.py:                            main(): 67 | simulation.py starting timestep 10
+INFO | 2023-12-20 21:08:21 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 9/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:22 |    simulation.py:                            main(): 67 | simulation.py starting timestep 11
+INFO | 2023-12-20 21:08:23 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 10/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:23 |    simulation.py:                            main(): 67 | simulation.py starting timestep 12
+INFO | 2023-12-20 21:08:24 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 11/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:24 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:24 |    simulation.py:                            main(): 67 | simulation.py starting timestep 13
+INFO | 2023-12-20 21:08:25 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 12/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:25 |    simulation.py:                            main(): 67 | simulation.py starting timestep 14
+INFO | 2023-12-20 21:08:26 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 13/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:27 |    simulation.py:                            main(): 67 | simulation.py starting timestep 15
+INFO | 2023-12-20 21:08:27 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 14/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:28 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:28 |    simulation.py:                            main(): 67 | simulation.py starting timestep 16
+INFO | 2023-12-20 21:08:28 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 15/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:29 |    simulation.py:                            main(): 67 | simulation.py starting timestep 17
+INFO | 2023-12-20 21:08:29 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 16/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:30 |    simulation.py:                            main(): 67 | simulation.py starting timestep 18
+INFO | 2023-12-20 21:08:30 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 17/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:31 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:31 |    simulation.py:                            main(): 67 | simulation.py starting timestep 19
+INFO | 2023-12-20 21:08:31 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 18/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:32 |    simulation.py:                            main(): 67 | simulation.py starting timestep 20
+INFO | 2023-12-20 21:08:32 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 19/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:33 |    simulation.py:                            main(): 67 | simulation.py starting timestep 21
+INFO | 2023-12-20 21:08:34 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:34 |    simulation.py:                            main(): 67 | simulation.py starting timestep 22
+INFO | 2023-12-20 21:08:34 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 20/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:34 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 21/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:35 |    simulation.py:                            main(): 67 | simulation.py starting timestep 23
+INFO | 2023-12-20 21:08:36 |    simulation.py:                            main(): 67 | simulation.py starting timestep 24
+INFO | 2023-12-20 21:08:36 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 22/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:36 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 23/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:37 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:37 |    simulation.py:                            main(): 67 | simulation.py starting timestep 25
+INFO | 2023-12-20 21:08:37 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 24/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:38 |    simulation.py:                            main(): 67 | simulation.py starting timestep 26
+INFO | 2023-12-20 21:08:39 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 25/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:39 |    simulation.py:                            main(): 67 | simulation.py starting timestep 27
+INFO | 2023-12-20 21:08:40 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 26/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:40 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:40 |    simulation.py:                            main(): 67 | simulation.py starting timestep 28
+INFO | 2023-12-20 21:08:41 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 27/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:41 |    simulation.py:                            main(): 67 | simulation.py starting timestep 29
+INFO | 2023-12-20 21:08:42 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 28/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:42 |    simulation.py:                            main(): 67 | simulation.py starting timestep 30
+INFO | 2023-12-20 21:08:43 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:43 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 29/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:43 |    simulation.py:                            main(): 67 | simulation.py starting timestep 31
+INFO | 2023-12-20 21:08:43 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 30/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:44 |    simulation.py:                            main(): 67 | simulation.py starting timestep 32
+INFO | 2023-12-20 21:08:45 |    simulation.py:                            main(): 67 | simulation.py starting timestep 33
+INFO | 2023-12-20 21:08:45 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 31/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:45 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 32/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:46 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:46 |    simulation.py:                            main(): 67 | simulation.py starting timestep 34
+INFO | 2023-12-20 21:08:47 |    simulation.py:                            main(): 67 | simulation.py starting timestep 35
+INFO | 2023-12-20 21:08:48 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 33/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:48 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 34/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:49 |    simulation.py:                            main(): 67 | simulation.py starting timestep 36
+INFO | 2023-12-20 21:08:49 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 35/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:50 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:50 |    simulation.py:                            main(): 67 | simulation.py starting timestep 37
+INFO | 2023-12-20 21:08:50 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 36/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:51 |    simulation.py:                            main(): 67 | simulation.py starting timestep 38
+INFO | 2023-12-20 21:08:51 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 37/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:52 |    simulation.py:                            main(): 67 | simulation.py starting timestep 39
+INFO | 2023-12-20 21:08:52 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 38/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:53 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:53 |    simulation.py:                            main(): 67 | simulation.py starting timestep 40
+INFO | 2023-12-20 21:08:53 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 39/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:54 |    simulation.py:                            main(): 67 | simulation.py starting timestep 41
+INFO | 2023-12-20 21:08:55 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 40/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:55 |    simulation.py:                            main(): 67 | simulation.py starting timestep 42
+INFO | 2023-12-20 21:08:56 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 41/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:56 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:56 |    simulation.py:                            main(): 67 | simulation.py starting timestep 43
+INFO | 2023-12-20 21:08:57 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 42/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:57 |    simulation.py:                            main(): 67 | simulation.py starting timestep 44
+INFO | 2023-12-20 21:08:58 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 43/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:58 |    simulation.py:                            main(): 67 | simulation.py starting timestep 45
+INFO | 2023-12-20 21:08:59 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 44/199 from simulation.py, P0'
+INFO | 2023-12-20 21:08:59 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:08:59 |    simulation.py:                            main(): 67 | simulation.py starting timestep 46
+INFO | 2023-12-20 21:09:00 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 45/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:00 |    simulation.py:                            main(): 67 | simulation.py starting timestep 47
+INFO | 2023-12-20 21:09:01 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 46/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:01 |    simulation.py:                            main(): 67 | simulation.py starting timestep 48
+INFO | 2023-12-20 21:09:02 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 47/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:02 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:02 |    simulation.py:                            main(): 67 | simulation.py starting timestep 49
+INFO | 2023-12-20 21:09:03 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 48/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:04 |    simulation.py:                            main(): 67 | simulation.py starting timestep 50
+INFO | 2023-12-20 21:09:04 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 49/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:05 |    simulation.py:                            main(): 67 | simulation.py starting timestep 51
+INFO | 2023-12-20 21:09:05 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 50/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:06 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:06 |    simulation.py:                            main(): 67 | simulation.py starting timestep 52
+INFO | 2023-12-20 21:09:06 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 51/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:07 |    simulation.py:                            main(): 67 | simulation.py starting timestep 53
+INFO | 2023-12-20 21:09:07 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 52/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:08 |    simulation.py:                            main(): 67 | simulation.py starting timestep 54
+INFO | 2023-12-20 21:09:09 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 53/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:09 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:09 |    simulation.py:                            main(): 67 | simulation.py starting timestep 55
+INFO | 2023-12-20 21:09:10 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 54/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:10 |    simulation.py:                            main(): 67 | simulation.py starting timestep 56
+INFO | 2023-12-20 21:09:11 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 55/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:11 |    simulation.py:                            main(): 67 | simulation.py starting timestep 57
+INFO | 2023-12-20 21:09:12 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 56/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:12 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:12 |    simulation.py:                            main(): 67 | simulation.py starting timestep 58
+INFO | 2023-12-20 21:09:13 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 57/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:13 |    simulation.py:                            main(): 67 | simulation.py starting timestep 59
+INFO | 2023-12-20 21:09:14 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 58/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:14 |    simulation.py:                            main(): 67 | simulation.py starting timestep 60
+INFO | 2023-12-20 21:09:15 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 59/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:15 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:15 |    simulation.py:                            main(): 67 | simulation.py starting timestep 61
+INFO | 2023-12-20 21:09:16 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 60/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:16 |    simulation.py:                            main(): 67 | simulation.py starting timestep 62
+INFO | 2023-12-20 21:09:17 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 61/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:17 |    simulation.py:                            main(): 67 | simulation.py starting timestep 63
+INFO | 2023-12-20 21:09:18 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 62/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:18 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:18 |    simulation.py:                            main(): 67 | simulation.py starting timestep 64
+INFO | 2023-12-20 21:09:19 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 63/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:19 |    simulation.py:                            main(): 67 | simulation.py starting timestep 65
+INFO | 2023-12-20 21:09:20 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 64/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:20 |    simulation.py:                            main(): 67 | simulation.py starting timestep 66
+INFO | 2023-12-20 21:09:21 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 65/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:21 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:21 |    simulation.py:                            main(): 67 | simulation.py starting timestep 67
+INFO | 2023-12-20 21:09:22 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 66/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:22 |    simulation.py:                            main(): 67 | simulation.py starting timestep 68
+INFO | 2023-12-20 21:09:23 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 67/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:23 |    simulation.py:                            main(): 67 | simulation.py starting timestep 69
+INFO | 2023-12-20 21:09:24 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 68/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:24 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:24 |    simulation.py:                            main(): 67 | simulation.py starting timestep 70
+INFO | 2023-12-20 21:09:25 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 69/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:26 |    simulation.py:                            main(): 67 | simulation.py starting timestep 71
+INFO | 2023-12-20 21:09:26 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 70/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:27 |    simulation.py:                            main(): 67 | simulation.py starting timestep 72
+INFO | 2023-12-20 21:09:27 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 71/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:28 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:28 |    simulation.py:                            main(): 67 | simulation.py starting timestep 73
+INFO | 2023-12-20 21:09:28 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 72/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:29 |    simulation.py:                            main(): 67 | simulation.py starting timestep 74
+INFO | 2023-12-20 21:09:29 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 73/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:30 |    simulation.py:                            main(): 67 | simulation.py starting timestep 75
+INFO | 2023-12-20 21:09:30 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 74/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:31 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:31 |    simulation.py:                            main(): 67 | simulation.py starting timestep 76
+INFO | 2023-12-20 21:09:31 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 75/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:32 |    simulation.py:                            main(): 67 | simulation.py starting timestep 77
+INFO | 2023-12-20 21:09:33 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 76/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:33 |    simulation.py:                            main(): 67 | simulation.py starting timestep 78
+INFO | 2023-12-20 21:09:34 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 77/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:34 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:34 |    simulation.py:                            main(): 67 | simulation.py starting timestep 79
+INFO | 2023-12-20 21:09:35 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 78/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:35 |    simulation.py:                            main(): 67 | simulation.py starting timestep 80
+INFO | 2023-12-20 21:09:36 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 79/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:37 |    simulation.py:                            main(): 67 | simulation.py starting timestep 81
+INFO | 2023-12-20 21:09:37 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 80/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:38 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:38 |    simulation.py:                            main(): 67 | simulation.py starting timestep 82
+INFO | 2023-12-20 21:09:38 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 81/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:39 |    simulation.py:                            main(): 67 | simulation.py starting timestep 83
+INFO | 2023-12-20 21:09:39 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 82/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:40 |    simulation.py:                            main(): 67 | simulation.py starting timestep 84
+INFO | 2023-12-20 21:09:40 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 83/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:41 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:41 |    simulation.py:                            main(): 67 | simulation.py starting timestep 85
+INFO | 2023-12-20 21:09:41 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 84/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:42 |    simulation.py:                            main(): 67 | simulation.py starting timestep 86
+INFO | 2023-12-20 21:09:42 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 85/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:43 |    simulation.py:                            main(): 67 | simulation.py starting timestep 87
+INFO | 2023-12-20 21:09:43 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 86/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:44 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:44 |    simulation.py:                            main(): 67 | simulation.py starting timestep 88
+INFO | 2023-12-20 21:09:44 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 87/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:45 |    simulation.py:                            main(): 67 | simulation.py starting timestep 89
+INFO | 2023-12-20 21:09:45 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 88/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:46 |    simulation.py:                            main(): 67 | simulation.py starting timestep 90
+INFO | 2023-12-20 21:09:46 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 89/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:47 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:47 |    simulation.py:                            main(): 67 | simulation.py starting timestep 91
+INFO | 2023-12-20 21:09:47 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 90/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:48 |    simulation.py:                            main(): 67 | simulation.py starting timestep 92
+INFO | 2023-12-20 21:09:48 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 91/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:49 |    simulation.py:                            main(): 67 | simulation.py starting timestep 93
+INFO | 2023-12-20 21:09:49 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 92/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:50 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:50 |    simulation.py:                            main(): 67 | simulation.py starting timestep 94
+INFO | 2023-12-20 21:09:50 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 93/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:51 |    simulation.py:                            main(): 67 | simulation.py starting timestep 95
+INFO | 2023-12-20 21:09:51 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 94/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:52 |    simulation.py:                            main(): 67 | simulation.py starting timestep 96
+INFO | 2023-12-20 21:09:52 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 95/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:53 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:53 |    simulation.py:                            main(): 67 | simulation.py starting timestep 97
+INFO | 2023-12-20 21:09:53 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 96/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:54 |    simulation.py:                            main(): 67 | simulation.py starting timestep 98
+INFO | 2023-12-20 21:09:55 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 97/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:55 |    simulation.py:                            main(): 67 | simulation.py starting timestep 99
+INFO | 2023-12-20 21:09:56 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 98/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:56 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+INFO | 2023-12-20 21:09:57 |    simulation.py:                            main(): 67 | simulation.py starting timestep 100
+INFO | 2023-12-20 21:09:57 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 99/199 from simulation.py, P0'
+INFO | 2023-12-20 21:09:58 |    simulation.py:                            main(): 67 | simulation.py starting timestep 101
+INFO | 2023-12-20 21:09:58 |      analysis.py:                            main(): 32 | analysis.py read next step. Value: 'Timestep 100/199 from simulation.py, P0'
+WARNING | 2023-12-20 21:09:58 |      analysis.py:                            main(): 39 | analysis.py detected condition. Sending signal
+INFO | 2023-12-20 21:09:58 |        client.py:                    effis_client(): 44 | analysis.py exiting effis_client.
+INFO | 2023-12-20 21:09:58 |        server.py:                   server_thread(): 58 | analysis.py closing connection
+INFO | 2023-12-20 21:09:58 |      analysis.py:                            main(): 46 | analysis.py closed test.bp
+INFO | 2023-12-20 21:09:58 |      analysis.py:                            main(): 49 | analysis.py calling effis_finalize
+INFO | 2023-12-20 21:09:58 |      analysis.py:                            main(): 52 | analysis.py done. Exiting.
+INFO | 2023-12-20 21:09:58 |        server.py:                   server_thread(): 58 | simulation.py closing connection
+INFO | 2023-12-20 21:09:58 |        client.py:                    effis_client(): 44 | simulation.py exiting effis_client.
+WARNING | 2023-12-20 21:09:59 |           api.py:                     effis_check(): 59 | simulation.py received EFFIS_SIGTERM. Performing checkpoint.
+INFO | 2023-12-20 21:09:59 |    simulation.py:                      checkpoint(): 15 | simulation main app performing checkpoint
+WARNING | 2023-12-20 21:09:59 |    simulation.py:                            main(): 84 | simulation.py app received 1 from effis_check. Terminating loop
+INFO | 2023-12-20 21:09:59 |    simulation.py:                            main(): 89 | simulation.py calling cleanup
+INFO | 2023-12-20 21:09:59 |    simulation.py:                            main(): 92 | simulation.py calling effis_finalize
+INFO | 2023-12-20 21:09:59 |    simulation.py:                            main(): 98 | simulation.py effis overhead: 0.015 seconds
+INFO | 2023-12-20 21:09:59 |    simulation.py:                            main(): 99 | simulation.py total program time: 118.17 seconds
+INFO | 2023-12-20 21:09:59 |    simulation.py:                            main():100 | simulation.py done. Exiting.
