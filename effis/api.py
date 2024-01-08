@@ -104,8 +104,8 @@ def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict 
         callback = signal_params['f']
         callback_args = signal_params['args']
 
-        logger.info(f"effis_check received {signal}. Executing callback {callback}")
-        callback(*callback_args)
+        if rank==0: logger.info(f"effis_check received {signal}. Executing callback {callback}")
+        callback(callback_args)
 
     return retval
 
