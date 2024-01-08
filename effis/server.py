@@ -36,24 +36,25 @@ def server_thread(port, app_name, q, thread_type):
     assert msg == signals.CLIENT_READY, f"EFFIS server thread for {app_name} received unknown acknowledgement {msg} instead of {signals.CLIENT_READY}"
 
     # Wait for a message
-    msg = None
-    if thread_type == 'sender':
-        # receive message from analysis client and forward it to the application
-        logger.debug(f"{app_name} waiting for message from client thread.")
-        msg = conn.recv()
-        
-        logger.debug(f"{app_name} received {msg} from client thread. Forwarding to effis server")
-        q.put(msg)
-    elif thread_type == 'listener':
-        # extract signal from the queue from the analysis server and forward it to the simulation client
-        logger.debug(f"{app_name} waiting for message from effis server.")
-        msg = q.get()
-        q.task_done()
-        
-        logger.debug(f"{app_name} received {msg} from effis server. Forwarding to app client thread.")
-        conn.send(msg)
-    else:
-        raise Exception(f"Cannot understand type {thread_type} of server thread to launch for {app_name}")
+    msg = ""
+    while all(signal not in msg for signal in ["TERM", "DONE"]):
+        if thread_type == 'sender':
+            # receive message from analysis client and forward it to the application
+            logger.debug(f"{app_name} waiting for message from client thread.")
+            msg = conn.recv()
+            
+            logger.debug(f"{app_name} received {msg} from client thread. Forwarding to effis server")
+            q.put(msg)
+        elif thread_type == 'listener':
+            # extract signal from the queue from the analysis server and forward it to the simulation client
+            logger.debug(f"{app_name} waiting for message from effis server.")
+            msg = q.get()
+            q.task_done()
+            
+            logger.debug(f"{app_name} received {msg} from effis server. Forwarding to app client thread.")
+            conn.send(msg)
+        else:
+            raise Exception(f"Cannot understand type {thread_type} of server thread to launch for {app_name}")
 
     # Close after you received a message
     logger.info(f"{app_name} closing connection")
