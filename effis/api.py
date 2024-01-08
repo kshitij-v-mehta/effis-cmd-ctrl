@@ -57,17 +57,17 @@ def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict 
             # nothing in queue. tell everyone to proceed.
             signal = EFFIS_CONTINUE
     
-    # Handle signals
+    # Broadcast signal to all processes
+    if rank == 0: logger.debug(f"{_app_name} Broadcasting signal {signal}.")
+    signal = MPI.COMM_WORLD.bcast(signal)
+
+    # Verify that a valid signal was received
     valid_signals = [EFFIS_CONTINUE, EFFIS_SIGTERM, CLIENT_DONE]
     if signal_callbacks is not None:
         valid_signals.extend(list(signal_callbacks.keys()))
 
     if signal not in valid_signals:
-        raise Exception(f"{_app_name} received unknown signal {signal} from app-client")
-
-    # Broadcast signal to all processes
-    if rank == 0: logger.debug(f"{_app_name} Broadcasting signal {signal}.")
-    signal = MPI.COMM_WORLD.bcast(signal)
+        raise Exception(f"{_app_name} received unknown signal {signal} from app-client.\nValid signals: {valid_signals}")
 
     # Nothing to do. Return to main app
     if signal == EFFIS_CONTINUE:
