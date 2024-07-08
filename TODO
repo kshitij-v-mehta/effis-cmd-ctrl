@@ -1,2 +1,4 @@
-- Can we have a SIGTERM handler, so that we do not have to do a broadcast at every step
 - cleanup is currently None. Passing it as not-none will crash the code.
+- effis signals should be integers, not strings, to further reduce the message size being broadcast in effis_check
+- Should effis_check send a non-zero integer as an indication to quit?
+
