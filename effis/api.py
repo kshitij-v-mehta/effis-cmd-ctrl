@@ -75,13 +75,13 @@ def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict 
 
     # Terminate the application safely
     elif signal == EFFIS_SIGTERM:
-        if rank==0: logger.warning(f"{_app_name} received {signal}. Performing checkpoint.")
-        _checkpoint_routine(*checkpoint_args)
+        if _checkpoint_routine is not None:
+            if rank==0: logger.warning(f"{_app_name} received {signal}. Performing checkpoint.")
+            _checkpoint_routine(*checkpoint_args)
         
         if _cleanup_routine is not None:
             logger.info(f"{_app_name} performing cleanup.")
             _cleanup_routine(*cleanup_args)
-
             logger.info(f"{_app_name} performed cleanup.")
 
         if rank == 0:
