@@ -91,17 +91,18 @@ def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict 
 
         retval = 1
 
+    # Return
     elif signal == CLIENT_DONE:
         if rank==0: logger.debug(f"{_app_name} received {signal}.")
 
+    # Received a user-defined signal from the app
     else:
-        # Received one of the user-defined signals from the analysis program
         assert signal_callbacks is not None, "signal_callbacks cannot be None here"
         assert signal in list(signal_callbacks.keys()), f"Expected one of {list(signal_callbacks.keys())}, " \
                                                         f"found {signal}"
 
         signal_params = signal_callbacks[signal]
-        callback = signal_params['f']
+        callback = signal_params['cb']
         callback_args = signal_params['args']
 
         if rank==0: logger.info(f"effis_check received {signal}. Executing callback {callback}")

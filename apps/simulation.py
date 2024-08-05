@@ -133,8 +133,8 @@ def main():
             # Pass args if applicable for the checkpoint and cleanup routines
             # Pass a callback for other signals that the simulation wants to subscribe to
             signals_subscribed = \
-                {"START_STREAM2": {'f': enable_stream2,  'args': stream2_enabled},
-                 "STOP_STREAM2":  {'f': disable_stream2, 'args': stream2_enabled}, }
+                {"START_STREAM2": {'cb': enable_stream2,  'args': stream2_enabled},
+                 "STOP_STREAM2":  {'cb': disable_stream2, 'args': stream2_enabled}, }
 
             if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
                                 cleanup_args = (writer, checkpoint_engine),
@@ -168,3 +168,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
