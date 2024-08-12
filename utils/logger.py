@@ -1,8 +1,8 @@
-import logging
+import os, logging
 
 
 logger = logging.getLogger("effis-cmd-ctrl")
-logging.basicConfig(level=logging.INFO, format="%(levelname)10s | %(asctime)s | %(filename)16s:%(funcName)32s():%(lineno)3s | %(message)s",
+logging.basicConfig(level=os.environ.get("EFFIS_LOGLEVEL", logging.INFO), format="%(levelname)10s | %(asctime)s | %(filename)16s:%(funcName)32s():%(lineno)3s | %(message)s",
                     datefmt="%Y-%m-%d %H:%M:%S")
 
 
