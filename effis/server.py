@@ -6,7 +6,8 @@ from utils.logger import logger
 
 _port = 6000
 
-def server_thread(port, app_name, q, thread_type):
+
+def server_thread(app_name, address, q, thread_type):
     """Start an effis server thread.
     port is where the socket will start
     app_name is for logging purposes only
@@ -16,16 +17,14 @@ def server_thread(port, app_name, q, thread_type):
     simulation must be of type listener whereas those for analysis apps must be senders.
     """
     # Write connection info for the client to connect
-    address = f"{socket.gethostname()}:{port}"
     logger.debug(f"{app_name} writing connection info {address} to {app_name}.conn_info")
     conn_info = f"{app_name}.conn_info" 
     with open(conn_info, "w") as f:
-        f.write(f"{address}")
+        f.write(f"{address[0]}:{address[1]")
 
     # Start listening for connections
     logger.debug(f"{app_name} listening for incoming connection")
-    addr = (socket.gethostname(), port)
-    listener = Listener(addr)
+    listener = Listener(address)
     conn = listener.accept()
     logger.info(f"{app_name} established connection.")
 
@@ -65,22 +64,56 @@ def server_thread(port, app_name, q, thread_type):
         pass
 
 
-def _get_port():
+def get_port():
     # port = 6000
     # while True:
     #     port += 1
     #     yield port
 
+    # Assign two ports, one for the main server thread and the other for the heartbeat thread
     global _port
-    _port += 1
+    _port += 2
     return _port
 
 
-def launch_server_thread(app_name, q, thread_type):
-    port = _get_port()
+def launch_heartbeat_thread(app, address, dec_q):
+    hbt = Thread(target=_heartbeat_monitor, args=(app, address, dec_q))
+    t.daemon = True
+    t.start()
+    return t
+
+def _heartbeat_monitor(app, address, dec_q):
+    """
+    Target function for the heartbeat monitor thread
+
+    Args:
+    app (AppDef) : Object of class AppDef
+    address (tuple) : (hostname, port) tuple to setup an incoming socket connection from the heartbeat client thread
+    dec_q (queue) : Queue to communicate with the decision engine
+    """
+    # Open connection with heartbeart thread on the app's side
+    listener = Listener(address)
+    conn = listener.accept()
+    logger.info(f"{app.name} server hb thread established connection with hb client")
+
+    # Monitor for heart beat from the heartbeat thread on the client side
+    hb_found = True
+    while hb_found:
+        hb_found = conn.poll(app.heart_rate)
+        logger.debug(f"Found heartbeat from {app.name}")
+
+    # Heartbeat not found within the specified heart_rate timeout. Notify the decision engine and return.
+    logger.critical(f"Heartbeat not found within {heart_rate} seconds for {app.name}."
+                    f"Notifying decision engine")
+    dec_q.put(app)
+
+def launch_server_thread(app_name, port, q, thread_type):
     logger.debug(f"{app_name} launching server thread on port {port}")
     t = Thread(target=server_thread, args=(port, app_name, q, thread_type))
+    t.deamon = True
     t.start()
 
-    return t
+    hbt = None
+
+    return (t, hbt)
 

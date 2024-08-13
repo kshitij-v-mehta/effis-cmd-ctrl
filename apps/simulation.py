@@ -2,7 +2,7 @@ import adios2
 from mpi4py import MPI
 import os, sys, traceback
 import time, datetime
-from effis.api import effis_init, effis_check, effis_finalize
+import effis.api as effis
 from utils.logger import logger
 
 
@@ -96,10 +96,10 @@ def main():
         stream2_writer = None
 
         if rank == 0:
-            logger.info(f"{app_name} initialized adios. Now calling effis_init")
+            logger.info(f"{app_name} initialized adios. Now calling effis.init")
         
         if rank==0: timer_start = time.time()
-        effis_init(os.path.basename(sys.argv[0]), checkpoint, None)
+        effis.init(os.path.basename(sys.argv[0]), checkpoint, None)
         if rank==0: effis_overhead += time.time()-timer_start
 
         # Begin timestepping
@@ -108,6 +108,11 @@ def main():
             if rank == 0:
                 logger.info(f"{app_name} starting timestep {t}")
 
+            # Send a heartbeat to EFFIS
+            if rank==0:
+                effis.heartbeat()
+
+            # Science app performs some computations
             perform_computation()
 
             # Write a step of test.bp
@@ -136,12 +141,12 @@ def main():
                 {"START_STREAM2": {'cb': enable_stream2,  'args': stream2_enabled},
                  "STOP_STREAM2":  {'cb': disable_stream2, 'args': stream2_enabled}, }
 
-            if 1 == effis_check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
+            if 1 == effis.check(checkpoint_args = (checkpoint_engine, v2, icheckpoint, t),
                                 cleanup_args = (writer, checkpoint_engine),
                                 signal_callbacks = signals_subscribed):
 
                 if rank==0:
-                    logger.warning(f"{app_name} app received 1 from effis_check. Terminating loop")
+                    logger.warning(f"{app_name} app received 1 from effis.check. Terminating loop")
                     effis_overhead = time.time() - timer_start
                 break
             if rank==0: effis_overhead += time.time() - timer_start
@@ -153,7 +158,7 @@ def main():
         # Call effis_finalize to terminate effis client and server threads
         if rank==0: logger.info(f"{app_name} calling effis_finalize")
         if rank==0: timer_start = time.time()
-        effis_finalize()
+        effis.finalize()
         if rank==0: effis_overhead += time.time() - timer_start
         
         if rank==0:
