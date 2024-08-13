@@ -22,7 +22,11 @@ def _heartbeat_monitor(app_name, hbq, server_addr):
     while True:
         hb_msg = hbq.get()
         logger.info(f"Client thread received heartbeat from simulation. Forwarding to effis.")
-        conn.send(hb_msg)
+        try:
+            conn.send(hb_msg)
+        except BrokenPipeError:
+            # server has already terminated connection after heartbeat timeout
+            pass
 
 def _listener(app_name, q, conn):
     """

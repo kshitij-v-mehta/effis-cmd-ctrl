@@ -93,7 +93,7 @@ def _launch_apps():
                          input_args = (), nprocs=2, ppn=2, num_nodes=1, 
                          cpus_per_task=1, gpus_per_task=None, 
                          tau_profiling=False, working_dir=os.getcwd(),
-                         monitor_heartbeat=False, heart_rate=2.0)
+                         monitor_heartbeat=True, heart_rate=2.0)
 
     analysis   = _AppDef(name='analysis_2.py', 
                          exe=f"{root}/analysis_2.py", 

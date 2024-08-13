@@ -73,8 +73,8 @@ def enable_stream2(flag_dict):
     if MPI.COMM_WORLD.Get_rank() == 0: logger.info("Callback; Enabled stream2 in the simulation")
 
 
-def perform_computation():
-    time.sleep(1)
+def perform_computation(delay):
+    time.sleep(delay)
 
 
 def main():
@@ -99,7 +99,7 @@ def main():
             logger.info(f"{app_name} initialized adios. Now calling effis.init")
         
         if rank==0: timer_start = time.time()
-        effis.init(os.path.basename(sys.argv[0]), checkpoint, None, heartbeat_monitoring=False, heart_rate=2.0)
+        effis.init(os.path.basename(sys.argv[0]), checkpoint, None, heartbeat_monitoring=True, heart_rate=2.0)
         if rank==0: effis_overhead += time.time()-timer_start
 
         # Begin timestepping
@@ -110,10 +110,12 @@ def main():
 
             # Send a heartbeat to EFFIS
             if rank==0:
+                timer_start = time.time()
                 effis.heartbeat()
+                effis_overhead += time.time() - timer_start
 
             # Science app performs some computations
-            perform_computation()
+            perform_computation(max(t-5,1))
 
             # Write a step of test.bp
             writer.BeginStep()
