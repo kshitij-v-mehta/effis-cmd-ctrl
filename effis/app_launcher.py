@@ -1,5 +1,6 @@
 import os, subprocess, socket
 from effis.server import launch_server_thread, launch_heartbeat_thread, get_port
+from effis.decision_engine import launch_decision_engine, terminate_decision_engine
 from queue import Queue
 from utils.logger import logger
 
@@ -11,7 +12,7 @@ _dec_q = Queue()  # Queue to communicate with the decision engine
 
 
 class RunningApp:
-    def __init__(self, p, appdef, threadpair, dec_q):
+    def __init__(self, pid, appdef, threadpair, dec_q):
         """
         Representing an app that is running.
 
@@ -22,7 +23,7 @@ class RunningApp:
         dec_q      (queue)         : a queue to communicate with the decision engine
         """
         self.appdef = appdef
-        self.p = p
+        self.pid = pid
         self.threadpair = threadpair
 
 
@@ -102,19 +103,18 @@ def _launch_apps():
     _apps_running.append(_launch(simulation))
     _apps_running.append(_launch(analysis))
     
-
-def _start_decision_engine():
-    pass
-
-def _wait():
+def _wait_server_threads():
     logger.debug(f"Waiting for server threads to finish")
     for t in _server_threads:
         t[0].join()
 
 def _main():
     _launch_apps()
-    _start_decision_engine()
-    _wait()
+    de_t = launch_decision_engine(_dec_q, _q, _apps_running)
+
+    _wait_server_threads()
+    # terminate_decision_engine(_dec_q)
+    logger.info(f"All done. Goodbye from EFFIS ..")
 
 
 if __name__ == '__main__':

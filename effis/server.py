@@ -36,7 +36,7 @@ def server_thread(app_name, address, q, thread_type):
 
     # Wait for a message
     msg = ""
-    while all(signal not in msg for signal in ["TERM", "DONE"]):
+    while all(signal not in msg for signal in ["TERM", "DONE", "QUIT"]):
         if thread_type == 'sender':
             # receive message from analysis client and forward it to the application
             logger.debug(f"{app_name} waiting for message from client thread.")
@@ -108,7 +108,8 @@ def _heartbeat_monitor(app, address, dec_q):
     # Heartbeat not found within the specified heart_rate timeout. Notify the decision engine and return.
     logger.critical(f"Heartbeat not found within {app.heart_rate} seconds for {app.name}. "
                     f"Notifying decision engine")
-    dec_q.put(app)
+    msg = signals.EFFIS_HEARTBEAT_NOT_DETECTED
+    dec_q.put((msg, app))
 
 def launch_server_thread(app_name, address, q, thread_type):
     logger.debug(f"{app_name} launching server thread on address {address}")
