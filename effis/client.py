@@ -39,16 +39,18 @@ def _listener(app_name, q, conn):
         logger.debug(f"{app_name} received {signal}. Forwarding to effis.")
         conn.send(signal)
 
-    logger.debug(f"{app_name} received {signal}. Returning.")
+    logger.debug(f"{app_name} client thread received {signal}. Returning.")
 
 def _sender(app_name, q, hbq, conn, hbt_server_addr):
     """
     I am a sender thread. I send signals from the effis server thread to the science app (simulation).
     """
     # Launch thread for sending heartbeat periodically
-    hbt = Thread(target=_heartbeat_monitor, args=(app_name, hbq, hbt_server_addr))
-    hbt.daemon = True
-    hbt.start()
+    if hbq is not None:
+        logger.info(f"Launching heartbeat client thread for {app_name}")
+        hbt = Thread(target=_heartbeat_monitor, args=(app_name, hbq, hbt_server_addr))
+        hbt.daemon = True
+        hbt.start()
 
     signal = ""
     while all(s not in signal for s in ["TERM", "DONE"]):

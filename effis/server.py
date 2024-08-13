@@ -55,13 +55,14 @@ def server_thread(app_name, address, q, thread_type):
         else:
             raise Exception(f"Cannot understand type {thread_type} of server thread to launch for {app_name}")
 
-    # Close after you received a message
-    logger.info(f"{app_name} closing connection")
     conn.close()
     try:
         os.remove(conn_info)
     except FileNotFoundError:
         pass
+    finally:
+        # Close after you received a message
+        logger.info(f"{app_name} closing connection. Exiting effis server.")
 
 
 def get_port():
@@ -102,7 +103,12 @@ def _heartbeat_monitor(app, address, dec_q):
     while hb_found:
         hb_found = conn.poll(timeout=app.heart_rate)
         if not hb_found: break
-        hb = conn.recv()
+        try:
+            hb = conn.recv()
+        except EOFError:
+            logger.debug(f"Effis heartbeat monitor for {app.name} encountered EOFError with connection. "
+                         f"Client thread seems to have terminated.")
+            return
         logger.debug(f"Effis server thread received heartbeat from {app.name}")
 
     # Heartbeat not found within the specified heart_rate timeout. Notify the decision engine and return.

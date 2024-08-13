@@ -60,7 +60,7 @@ def main():
     if rank==0: logger.info(f"{app_name} calling effis.finalize")
     effis.finalize()
 
-    if rank==0: logger.info(f"{app_name} done. Exiting.")
+    logger.info(f"Rank {rank} of {app_name} done. Exiting.")
 
 
 if __name__ == '__main__':

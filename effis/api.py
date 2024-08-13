@@ -15,7 +15,7 @@ _t = None
 _app_name = None
 
 
-def init(app_name, checkpoint_routine=None, cleanup_routine=None):
+def init(app_name, checkpoint_routine=None, cleanup_routine=None, heartbeat_monitoring=False, heart_rate=None):
     global _q, _hbq, _t, _app_name, _checkpoint_routine, _cleanup_routine
     _app_name = app_name
 
@@ -30,7 +30,11 @@ def init(app_name, checkpoint_routine=None, cleanup_routine=None):
     # Create queue and spawn listener. Wait for listener to spawn up and indicate all is good.
     thread_type = 'listener' if 'analysis' in app_name else 'sender'
     _q = Queue()
-    _hbq = Queue()
+
+    # Enable heartbeat monitoring by making the queue not None
+    if heartbeat_monitoring:
+        _hbq = Queue()
+
     _t = Thread(target=effis_client, args=(app_name, _q, _hbq, thread_type))
     _t.daemon = True
     _t.start()
@@ -39,7 +43,7 @@ def init(app_name, checkpoint_routine=None, cleanup_routine=None):
 
 
 def _record_heartbeat():
-    return
+    if _hbq is None: return
     # Add heartbeat message (timestamp) in heartbeat queue
     logger.debug(f"{_app_name} sending heartbeat to heartbeat client thread")
     _hbq.put(time.time())
@@ -129,6 +133,7 @@ def heartbeat():
     """
     Send a hearbeat via the client thread to the server
     """
+    if _hbq is None: return
     logger.debug(f"{_app_name} sending heartbeat")
     _record_heartbeat()
 
