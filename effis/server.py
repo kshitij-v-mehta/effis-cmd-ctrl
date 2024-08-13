@@ -20,7 +20,7 @@ def server_thread(app_name, address, q, thread_type):
     logger.debug(f"{app_name} writing connection info {address} to {app_name}.conn_info")
     conn_info = f"{app_name}.conn_info" 
     with open(conn_info, "w") as f:
-        f.write(f"{address[0]}:{address[1]")
+        f.write(f"{address[0]}:{address[1]}")
 
     # Start listening for connections
     logger.debug(f"{app_name} listening for incoming connection")
@@ -77,7 +77,8 @@ def get_port():
 
 
 def launch_heartbeat_thread(app, address, dec_q):
-    hbt = Thread(target=_heartbeat_monitor, args=(app, address, dec_q))
+    logger.info(f"Effis launching heartbeat server thread with heart rate of {app.heart_rate} seconds")
+    t = Thread(target=_heartbeat_monitor, args=(app, address, dec_q))
     t.daemon = True
     t.start()
     return t
@@ -99,17 +100,19 @@ def _heartbeat_monitor(app, address, dec_q):
     # Monitor for heart beat from the heartbeat thread on the client side
     hb_found = True
     while hb_found:
-        hb_found = conn.poll(app.heart_rate)
-        logger.debug(f"Found heartbeat from {app.name}")
+        hb_found = conn.poll(timeout=app.heart_rate)
+        if not hb_found: break
+        hb = conn.recv()
+        logger.debug(f"Effis server thread received heartbeat from {app.name}")
 
     # Heartbeat not found within the specified heart_rate timeout. Notify the decision engine and return.
-    logger.critical(f"Heartbeat not found within {heart_rate} seconds for {app.name}."
+    logger.critical(f"Heartbeat not found within {app.heart_rate} seconds for {app.name}. "
                     f"Notifying decision engine")
     dec_q.put(app)
 
-def launch_server_thread(app_name, port, q, thread_type):
-    logger.debug(f"{app_name} launching server thread on port {port}")
-    t = Thread(target=server_thread, args=(port, app_name, q, thread_type))
+def launch_server_thread(app_name, address, q, thread_type):
+    logger.debug(f"{app_name} launching server thread on address {address}")
+    t = Thread(target=server_thread, args=(app_name, address, q, thread_type))
     t.deamon = True
     t.start()
 

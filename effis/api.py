@@ -39,7 +39,9 @@ def init(app_name, checkpoint_routine=None, cleanup_routine=None):
 
 
 def _record_heartbeat():
+    return
     # Add heartbeat message (timestamp) in heartbeat queue
+    logger.debug(f"{_app_name} sending heartbeat to heartbeat client thread")
     _hbq.put(time.time())
 
 def check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict = None):
@@ -127,6 +129,7 @@ def heartbeat():
     """
     Send a hearbeat via the client thread to the server
     """
+    logger.debug(f"{_app_name} sending heartbeat")
     _record_heartbeat()
 
 

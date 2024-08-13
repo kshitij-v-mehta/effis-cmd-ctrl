@@ -21,6 +21,7 @@ def _heartbeat_monitor(app_name, hbq, server_addr):
     # Monitor heartbeat queue for heartbeat message from the simulation and send it to effis
     while True:
         hb_msg = hbq.get()
+        logger.info(f"Client thread received heartbeat from simulation. Forwarding to effis.")
         conn.send(hb_msg)
 
 def _listener(app_name, q, conn):

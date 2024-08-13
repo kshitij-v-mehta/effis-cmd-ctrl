@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess, socket
 from effis.server import launch_server_thread, launch_heartbeat_thread, get_port
 from queue import Queue
 from utils.logger import logger
@@ -56,6 +56,7 @@ def form_mpi_cmd(app):
 
 
 def _launch(app):
+    global _dec_q
     logger.debug(f"{app.name} launching server thread")
     thread_type = 'listener'
     if 'analysis' in app.name:
@@ -81,7 +82,7 @@ def _launch(app):
         assert app.heart_rate is not None, "Need a valid value for {app.name}'s heart rate"
         launch_heartbeat_thread(app, (socket.gethostname(), port+1), _dec_q)
 
-    return (RunningApp(app, (st, hbt), _dec_q))
+    return (RunningApp(p, app, (st, hbt), _dec_q))
 
 def _launch_apps():
     root = "/home/kmehta/vshare/effis-cmd-ctrl/apps"
