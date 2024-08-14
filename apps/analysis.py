@@ -2,7 +2,7 @@ import adios2
 from mpi4py import MPI
 import os, sys, traceback
 import effis.signals as effis_signals
-from effis.api import effis_init, effis_finalize, effis_signal
+import effis.api as effis
 from utils.logger import logger
 
 
@@ -11,8 +11,8 @@ def main():
     rank = MPI.COMM_WORLD.Get_rank()
 
     # Start effis socket thread
-    if rank==0: logger.info(f"{app_name} calling effis_init")
-    effis_init(os.path.basename(app_name))
+    if rank==0: logger.info(f"{app_name} calling effis.init")
+    effis.init(os.path.basename(app_name))
 
     ad2 = adios2.ADIOS()
     io = ad2.DeclareIO("reader")
@@ -37,7 +37,7 @@ def main():
         check = MPI.COMM_WORLD.allreduce(retval)
         if check > 0:
             if rank==0: logger.warning(f"{app_name} detected condition. Sending signal")
-            effis_signal(effis_signals.EFFIS_SIGTERM)
+            effis.signal(effis_signals.EFFIS_SIGTERM)
             engine.EndStep()
             break
 
@@ -46,8 +46,8 @@ def main():
     if rank==0: logger.info(f"{app_name} closed test.bp")
 
     # Shut the socket thread
-    if rank==0: logger.info(f"{app_name} calling effis_finalize")
-    effis_finalize()
+    if rank==0: logger.info(f"{app_name} calling effis.finalize")
+    effis.finalize()
 
     if rank==0: logger.info(f"{app_name} done. Exiting.")
 

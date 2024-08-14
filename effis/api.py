@@ -1,3 +1,4 @@
+import time
 from threading import Thread
 from queue import Queue, Empty
 from mpi4py import MPI
@@ -9,12 +10,13 @@ from utils.logger import logger
 _checkpoint_routine = None
 _cleanup_routine = None
 _q = None
+_hbq = None                 # Queue for sending heartbeat
 _t = None
 _app_name = None
 
 
-def effis_init(app_name, checkpoint_routine=None, cleanup_routine=None):
-    global _q, _t, _app_name, _checkpoint_routine, _cleanup_routine
+def init(app_name, checkpoint_routine=None, cleanup_routine=None, heartbeat_monitoring=False, heart_rate=None):
+    global _q, _hbq, _t, _app_name, _checkpoint_routine, _cleanup_routine
     _app_name = app_name
 
     _checkpoint_routine = checkpoint_routine
@@ -28,13 +30,25 @@ def effis_init(app_name, checkpoint_routine=None, cleanup_routine=None):
     # Create queue and spawn listener. Wait for listener to spawn up and indicate all is good.
     thread_type = 'listener' if 'analysis' in app_name else 'sender'
     _q = Queue()
-    _t = Thread(target=effis_client, args=(app_name, _q, thread_type))
+
+    # Enable heartbeat monitoring by making the queue not None
+    if heartbeat_monitoring:
+        _hbq = Queue()
+
+    _t = Thread(target=effis_client, args=(app_name, _q, _hbq, thread_type))
+    _t.daemon = True
     _t.start()
 
     logger.debug(f"{app_name} exiting effis_init.")
 
 
-def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict = None):
+def _record_heartbeat():
+    if _hbq is None: return
+    # Add heartbeat message (timestamp) in heartbeat queue
+    logger.debug(f"{_app_name} sending heartbeat to heartbeat client thread")
+    _hbq.put(time.time())
+
+def check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict = None):
     """
     Check if a signal has been delivered.
     The effis server spawned by the root process check for a signal. If found, it broadcasts to other processes, else
@@ -46,6 +60,10 @@ def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict 
     rank = MPI.COMM_WORLD.Get_rank()
     signal = None
     retval = 0
+
+    # Rank 0 sends a heartbeat to effis
+    if rank==0:
+        _record_heartbeat()
 
     # check queue if a signal has been received
     if rank == 0:
@@ -95,7 +113,7 @@ def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict 
     elif signal == CLIENT_DONE:
         if rank==0: logger.debug(f"{_app_name} received {signal}.")
 
-    # Received a user-defined signal from the app
+    # Received a user-defined signal from some app
     else:
         assert signal_callbacks is not None, "signal_callbacks cannot be None here"
         assert signal in list(signal_callbacks.keys()), f"Expected one of {list(signal_callbacks.keys())}, " \
@@ -111,7 +129,16 @@ def effis_check(checkpoint_args = (), cleanup_args = (), signal_callbacks: dict 
     return retval
 
 
-def effis_signal(signal):
+def heartbeat():
+    """
+    Send a hearbeat via the client thread to the server
+    """
+    if _hbq is None: return
+    logger.debug(f"{_app_name} sending heartbeat")
+    _record_heartbeat()
+
+
+def signal(signal):
     if MPI.COMM_WORLD.Get_rank() != 0:
         return
 
@@ -120,10 +147,10 @@ def effis_signal(signal):
     _q.put(signal)
 
 
-def effis_finalize():
+def finalize():
     if MPI.COMM_WORLD.Get_rank() != 0:
         return
 
-    effis_signal(CLIENT_DONE)
+    signal(CLIENT_DONE)
     _t.join()
 

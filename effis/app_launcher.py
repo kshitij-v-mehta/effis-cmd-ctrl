@@ -1,5 +1,6 @@
-import os, subprocess
-from effis.server import launch_server_thread
+import os, subprocess, socket
+from effis.server import launch_server_thread, launch_heartbeat_thread, get_port
+from effis.decision_engine import launch_decision_engine, terminate_decision_engine
 from queue import Queue
 from utils.logger import logger
 
@@ -7,10 +8,27 @@ from utils.logger import logger
 _apps_running = []
 _server_threads = []
 _q = Queue()
+_dec_q = Queue()  # Queue to communicate with the decision engine
 
 
-class _App:
-    def __init__(self, name, exe, input_args, nprocs, ppn, num_nodes, cpus_per_task, gpus_per_task, tau_profiling, working_dir):
+class RunningApp:
+    def __init__(self, pid, appdef, threadpair, dec_q):
+        """
+        Representing an app that is running.
+
+        Args:
+        appdef     (class _AppDef) : an object of class _AppDef
+        p          (subprocess)    : The process object of the running app
+        threadpair (tuple)         : a tuple of a pair of Threads (server thread, heartbeat thread)
+        dec_q      (queue)         : a queue to communicate with the decision engine
+        """
+        self.appdef = appdef
+        self.pid = pid
+        self.threadpair = threadpair
+
+
+class _AppDef:
+    def __init__(self, name, exe, input_args, nprocs, ppn, num_nodes, cpus_per_task, gpus_per_task, tau_profiling, working_dir, monitor_heartbeat = False, heart_rate=None):
         self.name = name
         self.exe = exe
         self.input_args = input_args
@@ -21,6 +39,8 @@ class _App:
         self.gpus_per_task = gpus_per_task
         self.working_dir = working_dir
         self.tau_profiling = tau_profiling
+        self.monitor_heartbeat = monitor_heartbeat
+        self.heart_rate = heart_rate
 
 
 def form_slurm_cmd(app):
@@ -37,13 +57,17 @@ def form_mpi_cmd(app):
 
 
 def _launch(app):
+    global _dec_q
     logger.debug(f"{app.name} launching server thread")
     thread_type = 'listener'
     if 'analysis' in app.name:
         thread_type = 'sender'
-    _server_threads.append(launch_server_thread(app.name, _q, thread_type))
-    run_cmd = form_slurm_cmd(app)
-    # run_cmd = form_mpi_cmd(app)
+    port = get_port()
+    address = (socket.gethostname(), port)
+    st = launch_server_thread(app.name, address, _q, thread_type)
+    _server_threads.append(st)
+    # run_cmd = form_slurm_cmd(app)
+    run_cmd = form_mpi_cmd(app)
     
     logger.info(f"{app.name} launching application as {run_cmd}")
     env = os.environ
@@ -52,35 +76,45 @@ def _launch(app):
         env['PROFILE_DIR'] = os.path.join(app.working_dir, 'tau-profile')
         logger.debug(f"{app.name} Added tau profiling to env")
     p = subprocess.Popen(run_cmd, cwd=app.working_dir, env=env)
-    return p
 
+    # Launch heartbeat thread if heartbeat monitoring is enabled
+    hbt = None
+    if app.monitor_heartbeat:
+        assert app.heart_rate is not None, "Need a valid value for {app.name}'s heart rate"
+        launch_heartbeat_thread(app, (socket.gethostname(), port+1), _dec_q)
+
+    return (RunningApp(p, app, (st, hbt), _dec_q))
 
 def _launch_apps():
+    root = "/home/kmehta/vshare/effis-cmd-ctrl/apps"
     sim_num_nodes = int(os.getenv("SLURM_JOB_NUM_NODES") or 0)-1
-    simulation = _App(name='simulation.py', 
-                      exe="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/simulation.py", 
-                      input_args = (), nprocs=32*sim_num_nodes, ppn=32, num_nodes=sim_num_nodes, 
-                      cpus_per_task=1, gpus_per_task=None, 
-                      tau_profiling=False, working_dir=os.getcwd())
+    simulation = _AppDef(name='simulation.py', 
+                         exe=f"{root}/simulation.py", 
+                         input_args = (), nprocs=2, ppn=2, num_nodes=1, 
+                         cpus_per_task=1, gpus_per_task=None, 
+                         tau_profiling=False, working_dir=os.getcwd(),
+                         monitor_heartbeat=True, heart_rate=2.0)
 
-    analysis   = _App(name='analysis.py', 
-                      exe="/lustre/orion/csc143/world-shared/kmehta/effis-cmd-ctrl/apps/analysis.py", 
-                      input_args = (), nprocs=32, ppn=32, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
-                      tau_profiling=False, working_dir=os.getcwd())
+    analysis   = _AppDef(name='analysis_2.py', 
+                         exe=f"{root}/analysis_2.py", 
+                         input_args = (), nprocs=2, ppn=2, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
+                         tau_profiling=False, working_dir=os.getcwd())
 
     _apps_running.append(_launch(simulation))
     _apps_running.append(_launch(analysis))
     
-
-def _monitor_queue():
+def _wait_server_threads():
     logger.debug(f"Waiting for server threads to finish")
     for t in _server_threads:
-        t.join()
-
+        t[0].join()
 
 def _main():
     _launch_apps()
-    _monitor_queue()
+    de_t = launch_decision_engine(_dec_q, _q, _apps_running)
+
+    _wait_server_threads()
+    # terminate_decision_engine(_dec_q)
+    logger.info(f"All done. Goodbye from EFFIS ..")
 
 
 if __name__ == '__main__':
