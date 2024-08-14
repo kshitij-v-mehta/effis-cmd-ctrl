@@ -40,7 +40,11 @@ def server_thread(app_name, address, q, thread_type):
         if thread_type == 'sender':
             # receive message from analysis client and forward it to the application
             logger.debug(f"{app_name} waiting for message from client thread.")
-            msg = conn.recv()
+            try:
+                msg = conn.recv()
+            except (EOFError, BrokenPipeError):
+                # Connection is closed because workflow was possibly terminated
+                pass
             
             logger.debug(f"{app_name} received {msg} from client thread. Forwarding to effis server")
             q.put(msg)
@@ -51,7 +55,11 @@ def server_thread(app_name, address, q, thread_type):
             q.task_done()
             
             logger.debug(f"{app_name} received {msg} from effis server. Forwarding to app client thread.")
-            conn.send(msg)
+            try:
+                conn.send(msg)
+            except (EOFError, BrokenPipeError):
+                # Connection is closed because workflow was possibly terminated
+                pass
         else:
             raise Exception(f"Cannot understand type {thread_type} of server thread to launch for {app_name}")
 
