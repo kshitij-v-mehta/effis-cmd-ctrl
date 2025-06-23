@@ -35,8 +35,8 @@ def server_thread(app_name, address, q, thread_type):
     assert msg == signals.CLIENT_READY, f"EFFIS server thread for {app_name} received unknown acknowledgement {msg} instead of {signals.CLIENT_READY}"
 
     # Wait for a message
-    msg = ""
-    while all(signal not in msg for signal in ["TERM", "DONE", "QUIT"]):
+    msg = 0
+    while msg not in [signals.EFFIS_SIGTERM, signals.EFFIS_QUIT, signals.CLIENT_DONE]:
         if thread_type == 'sender':
             # receive message from analysis client and forward it to the application
             logger.debug(f"{app_name} waiting for message from client thread.")

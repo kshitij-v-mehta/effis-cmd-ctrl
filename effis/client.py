@@ -32,8 +32,8 @@ def _listener(app_name, q, conn):
     """
     I am a listener thread. I listen for incoming signals from the science app (analysis codes) and forward them to effis
     """
-    signal = ""
-    while all(s not in signal for s in ["TERM", "DONE"]):
+    signal = 0
+    while signal not in [effis_signals.EFFIS_SIGTERM, effis_signals.CLIENT_DONE]:
         # Get signal from the application
         logger.debug(f"{app_name} waiting for signal in queue.")
         signal = q.get()
@@ -56,8 +56,8 @@ def _sender(app_name, q, hbq, conn, hbt_server_addr):
         hbt.daemon = True
         hbt.start()
 
-    signal = ""
-    while all(s not in signal for s in ["TERM", "DONE"]):
+    signal = 0
+    while signal not in [effis_signals.EFFIS_SIGTERM, effis_signals.CLIENT_DONE]:
         # Receive signal
         logger.debug(f"{app_name} waiting for signal from effis server.")
         signal = conn.recv()
