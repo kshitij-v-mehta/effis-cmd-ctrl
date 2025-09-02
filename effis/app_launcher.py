@@ -95,8 +95,8 @@ def _launch_apps():
                          tau_profiling=False, working_dir=os.getcwd(),
                          monitor_heartbeat=True, heart_rate=2.0)
 
-    analysis   = _AppDef(name='analysis_2.py', 
-                         exe=f"{root}/analysis_2.py", 
+    analysis   = _AppDef(name='analysis.py',
+                         exe=f"{root}/analysis.py",
                          input_args = (), nprocs=2, ppn=2, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
                          tau_profiling=False, working_dir=os.getcwd())
 
@@ -119,4 +119,3 @@ def _main():
 
 if __name__ == '__main__':
     _main()
-
