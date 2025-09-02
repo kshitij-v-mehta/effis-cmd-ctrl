@@ -1,4 +1,4 @@
-import os, subprocess, socket
+import os, sys, subprocess, socket
 from effis.server import launch_server_thread, launch_heartbeat_thread, get_port
 from effis.decision_engine import launch_decision_engine, terminate_decision_engine
 from queue import Queue
@@ -86,8 +86,7 @@ def _launch(app):
     return (RunningApp(p, app, (st, hbt), _dec_q))
 
 def _launch_apps():
-    root = "/home/kmehta/vshare/effis-cmd-ctrl/apps"
-    sim_num_nodes = int(os.getenv("SLURM_JOB_NUM_NODES") or 0)-1
+    root = f"/home/kmehta/vshare/effis-cmd-ctrl/apps/{sys.argv[1]}"
     simulation = _AppDef(name='simulation.py', 
                          exe=f"{root}/simulation.py", 
                          input_args = (), nprocs=2, ppn=2, num_nodes=1, 
@@ -118,4 +117,5 @@ def _main():
 
 
 if __name__ == '__main__':
+    assert len(sys.argv) == 2, "Provide use case name (e.g. use-case-1)"
     _main()
