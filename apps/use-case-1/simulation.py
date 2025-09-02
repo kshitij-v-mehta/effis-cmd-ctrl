@@ -64,7 +64,7 @@ def main():
             logger.info(f"{app_name} initialized adios. Now calling effis.init")
         
         if rank==0: timer_start = time.time()
-        effis.init(os.path.basename(sys.argv[0]), checkpoint, None, heartbeat_monitoring=True, heart_rate=2.0)
+        effis.init(os.path.basename(sys.argv[0]), checkpoint, None, heartbeat_monitoring=False, heart_rate=10.0)
         if rank==0: effis_overhead += time.time()-timer_start
 
         # Begin timestepping
