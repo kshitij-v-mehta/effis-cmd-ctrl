@@ -27,8 +27,9 @@ class RunningApp:
         self.threadpair = threadpair
 
 
-class _AppDef:
-    def __init__(self, name, exe, input_args, nprocs, ppn, num_nodes, cpus_per_task, gpus_per_task, tau_profiling, working_dir, monitor_heartbeat = False, heart_rate=None):
+class AppDef:
+    def __init__(self, name, exe, input_args, nprocs, ppn, num_nodes, cpus_per_task, gpus_per_task, tau_profiling,
+                 working_dir, mpi=True, monitor_heartbeat = False, heart_rate=None):
         self.name = name
         self.exe = exe
         self.input_args = input_args
@@ -38,9 +39,21 @@ class _AppDef:
         self.cpus_per_task = cpus_per_task
         self.gpus_per_task = gpus_per_task
         self.working_dir = working_dir
+        self.mpi = mpi
         self.tau_profiling = tau_profiling
         self.monitor_heartbeat = monitor_heartbeat
         self.heart_rate = heart_rate
+
+
+def launch_external(app: AppDef):
+    run_cmd = form_mpi_cmd(app)
+    logger.debug("Effis launching external app %s", run_cmd)
+    p = None
+    try:
+        p = subprocess.Popen(run_cmd, cwd=app.working_dir)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error {e} launching external app")
+    return p
 
 
 def form_slurm_cmd(app):
@@ -66,8 +79,11 @@ def _launch(app):
     address = (socket.gethostname(), port)
     st = launch_server_thread(app.name, address, _q, thread_type)
     _server_threads.append(st)
-    # run_cmd = form_slurm_cmd(app)
-    run_cmd = form_mpi_cmd(app)
+    if app.mpi:
+        # run_cmd = form_slurm_cmd(app)
+        run_cmd = form_mpi_cmd(app)
+    else:
+        run_cmd = f"python3 {app.exe}".split()
     
     logger.info(f"{app.name} launching application as {run_cmd}")
     env = os.environ
@@ -87,17 +103,23 @@ def _launch(app):
 
 def _launch_apps():
     root = f"/home/kmehta/vshare/effis-cmd-ctrl/apps/{sys.argv[1]}"
-    simulation = _AppDef(name='simulation.py', 
+    simulation = AppDef(name='simulation.py',
                          exe=f"{root}/simulation.py", 
                          input_args = (), nprocs=2, ppn=2, num_nodes=1, 
                          cpus_per_task=1, gpus_per_task=None, 
                          tau_profiling=False, working_dir=os.getcwd(),
                          monitor_heartbeat=True, heart_rate=2.0)
 
-    analysis   = _AppDef(name='analysis.py',
-                         exe=f"{root}/analysis.py",
-                         input_args = (), nprocs=2, ppn=2, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
-                         tau_profiling=False, working_dir=os.getcwd())
+    if sys.argv[1] == 'use-case-3':
+        analysis = AppDef(name='analysis.py',
+                          exe=f"{root}/analysis.py",
+                          input_args=(), nprocs=1, ppn=2, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
+                          tau_profiling=False, working_dir=os.getcwd(), mpi=True)
+    else:
+        analysis = AppDef(name='analysis.py',
+                          exe=f"{root}/analysis.py",
+                          input_args = (), nprocs=2, ppn=2, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
+                          tau_profiling=False, working_dir=os.getcwd())
 
     _apps_running.append(_launch(simulation))
     _apps_running.append(_launch(analysis))

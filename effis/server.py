@@ -1,6 +1,8 @@
 from multiprocessing.connection import Listener
 from threading import Thread
 import os, socket
+
+from effis.launch_external import AppDef, launch_external
 import effis.signals as signals
 from utils.logger import logger
 
@@ -47,13 +49,22 @@ def server_thread(app_name, address, q, thread_type):
                 pass
             
             logger.debug(f"{app_name} received {msg} from client thread. Forwarding to effis server")
+            if 'LAUNCH_EXTERNAL' in str(msg):
+                external_path = "/home/kmehta/vshare/effis-cmd-ctrl/apps/use-case-3/external.py"
+                external = AppDef(name='analysis',
+                                  exe=external_path,
+                                  input_args=(), nprocs=2, ppn=2, num_nodes=1, cpus_per_task=1, gpus_per_task=None,
+                                  tau_profiling=False, working_dir=os.getcwd())
+                launch_external(external)
+                continue
+
             q.put(msg)
         elif thread_type == 'listener':
             # extract signal from the queue from the analysis server and forward it to the simulation client
             logger.debug(f"{app_name} waiting for message from effis server.")
             msg = q.get()
             q.task_done()
-            
+
             logger.debug(f"{app_name} received {msg} from effis server. Forwarding to app client thread.")
             try:
                 conn.send(msg)
@@ -134,4 +145,3 @@ def launch_server_thread(app_name, address, q, thread_type):
     hbt = None
 
     return (t, hbt)
-
